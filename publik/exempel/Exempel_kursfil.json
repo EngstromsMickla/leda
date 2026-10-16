@@ -1,0 +1,194 @@
+{
+  "format": "mickla-leda-kursfil",
+  "version": 1,
+  "_om": "Mall och påhittat exempel. Kopiera filen, byt namn och fyll i er egen organisation. Fält som börjar med _ är förklaringar och läses inte av sajten. Filen läses in lokalt i webbläsaren och lämnar aldrig datorn, så den kan innehålla interna uppgifter. Lägg aldrig en verklig kursfil i ett publikt repo.",
+  "organisation": "Exempelkonsulterna AB (påhittat)",
+  "grupp": "Ledningsgruppen",
+  "_beskrivning": "En kort beskrivning av organisationen som sätts in i övningarnas prompter, så att AI svarar för rätt sorts verksamhet. Skriv den så att den passar efter orden \"ledningsgruppen i\".",
+  "beskrivning": "ett svenskt konsultbolag med omkring 40 medarbetare inom informationshantering",
+  "_caseforslag": "Förslag på ledningens case, som deltagarna kan välja eller skriva om på startsidan. Två till fyra verkliga frågor.",
+  "caseforslag": [
+    "Hur behåller vi marginalen när AI gör arbetet snabbare?",
+    "Vilket AI-stött erbjudande kan vi sälja inom ett år?",
+    "Hur får alla medarbetare grundläggande AI-kunnighet utan att produktionen stannar?"
+  ],
+  "_sammanhang": "Organisationens egen riktning. Visas på kortet Vad säljer ett kunskapsföretag? och i spelboken. Två till fyra korta stycken.",
+  "sammanhang": [
+    {
+      "rubrik": "Vår strategi",
+      "text": "Vi ska vara den rådgivare kunderna ringer först när de ska digitalisera sin informationshantering. Vi växer genom fler långa kundrelationer och färre korta resursuppdrag."
+    },
+    {
+      "rubrik": "Årets fokus",
+      "text": "Två säljbara erbjudanden till, högre timintäkt och en tydligare plan för hur AI ska höja produktiviteten i uppdragen."
+    }
+  ],
+  "_spelregler": "Kärnan i organisationens AI-policy och AI-instruktion, i korta rader. Visas på kortet Våra spelregler och i spelboken.",
+  "spelregler": {
+    "kalla": "Exempelkonsulternas AI-policy och AI-instruktion (påhittade)",
+    "principer": [
+      {
+        "rubrik": "Människan ansvarar",
+        "text": "AI föreslår, en människa granskar och ansvarar för resultatet."
+      },
+      {
+        "rubrik": "Bara godkända verktyg",
+        "text": "Kund- och internt material används bara i verktyg som är godkända för det."
+      },
+      {
+        "rubrik": "Öppenhet",
+        "text": "Vi berättar för kunden från start hur AI används i uppdraget."
+      },
+      {
+        "rubrik": "Granskning i proportion",
+        "text": "Ju dyrare ett fel vore, desto noggrannare granskning."
+      }
+    ],
+    "regler": [
+      "Nya verktyg får prövas med öppen eller påhittad information innan de är godkända.",
+      "Privata konton och gratisversioner används aldrig för kund- eller intern information.",
+      "Varje agent har en utsedd ägare.",
+      "Osäker? Fråga först."
+    ]
+  },
+  "_beslutsnivaer": "Vem som beslutar på varje nivå. vem och text visas på kortet Klassen avgör vem och hur fort, i beslutsguiden och i mandatövningen. grans är en kort beskrivning av mandatet för en hatt.",
+  "beslutsnivaer": {
+    "kalla": "Exempelkonsulternas beslutsordning (påhittad)",
+    "ide": {
+      "vem": "Medarbetarna",
+      "text": "Idé eller experiment"
+    },
+    "hatt": {
+      "vem": "AI-gruppen",
+      "text": "Beslutar själva",
+      "grans": "upp till 50 000 kr per år"
+    },
+    "frisyr": {
+      "vem": "Ledningsgruppen",
+      "text": "Kvartalsvis urval, principiellt godkännande"
+    },
+    "tatuering": {
+      "vem": "Ledningsgruppen och styrelsen",
+      "text": "Skalning, plattform, kunddata, policy, prismodell"
+    }
+  },
+  "_beslutskort": "Beslut att klassa i övningen Sortera besluten. forslag är kursledarens förslag (hatt, frisyr eller tatuering) och visas först efter att gruppen har klassat. id: små bokstäver, siffror och bindestreck.",
+  "beslutskort": [
+    {
+      "id": "testa-verktyg",
+      "text": "Låta en konsult pröva ett nytt AI-verktyg med påhittad information",
+      "forslag": "hatt",
+      "motivering": "Ingen information riskeras och det går att sluta i morgon."
+    },
+    {
+      "id": "godkanna-verktyg",
+      "text": "Godkänna ett nytt AI-verktyg för intern information",
+      "forslag": "frisyr",
+      "motivering": "Vanor och arbetssätt byggs upp kring verktyget, men det går att byta."
+    },
+    {
+      "id": "arkiv",
+      "text": "Bygga ett AI-stöd som söker i hela projektarkivet",
+      "forslag": "tatuering",
+      "motivering": "Kunddata, plattformsval och kundernas godkännande gör det svårt att backa."
+    },
+    {
+      "id": "erbjudande",
+      "text": "Paketera ett AI-stött erbjudande och sälja det till kunder",
+      "forslag": "frisyr",
+      "motivering": "Det tar tid att bygga och avveckla, men det binder inte bolaget."
+    },
+    {
+      "id": "fast-pris",
+      "text": "Gå över till fast pris för AI-stödda leveranser",
+      "forslag": "tatuering",
+      "motivering": "Prismodellen styr affären och kundernas förväntningar."
+    },
+    {
+      "id": "agent-kund",
+      "text": "Låta en agent skicka utkast direkt till kunder",
+      "forslag": "tatuering",
+      "motivering": "Påverkar kunder utan mänsklig kontrollpunkt."
+    },
+    {
+      "id": "forum",
+      "text": "Starta ett internt forum för att dela prompter och misslyckanden",
+      "forslag": "hatt",
+      "motivering": "Billigt, öppet och lätt att lägga ner."
+    },
+    {
+      "id": "tid",
+      "text": "Ge varje konsult fyra timmar i månaden till AI-tester",
+      "forslag": "frisyr",
+      "motivering": "Kostar debiterbar tid och skapar förväntningar, men går att ändra."
+    }
+  ],
+  "_uppgiftskort": "Uppgifter till övningen AI, automation eller människa? svar är ai, auto eller manniska.",
+  "uppgiftskort": [
+    {
+      "id": "underlag",
+      "text": "Sammanfatta ett förfrågningsunderlag på 80 sidor till krav och risker",
+      "svar": "ai",
+      "motivering": "Långt, varierat språk som ska tolkas. Granskas av den som skriver anbudet."
+    },
+    {
+      "id": "filnamn",
+      "text": "Kontrollera att filnamn i en leverans följer kundens namnstandard",
+      "svar": "auto",
+      "motivering": "En regel med samma svar varje gång."
+    },
+    {
+      "id": "faktura",
+      "text": "Skicka fakturaunderlag den 25:e varje månad",
+      "svar": "auto",
+      "motivering": "Ren regel och tidpunkt."
+    },
+    {
+      "id": "liknande",
+      "text": "Hitta tidigare uppdrag som liknar en ny förfrågan",
+      "svar": "ai",
+      "motivering": "Likhet i betydelse, inte i exakta ord."
+    },
+    {
+      "id": "pris",
+      "text": "Bestämma pris och upplägg i ett strategiskt anbud",
+      "svar": "manniska",
+      "motivering": "Ett affärsbeslut. AI kan räkna scenarier, men en människa beslutar."
+    },
+    {
+      "id": "tidrapport",
+      "text": "Föra över tidrapporter till ekonomisystemet",
+      "svar": "auto",
+      "motivering": "Samma fält varje gång."
+    },
+    {
+      "id": "oversatt",
+      "text": "Översätta en slutrapport till engelska",
+      "svar": "ai",
+      "motivering": "Språk och tolkning. Fackord granskas."
+    },
+    {
+      "id": "samtal",
+      "text": "Ge en medarbetare återkoppling i ett utvecklingssamtal",
+      "svar": "manniska",
+      "motivering": "Relation och ansvar. AI kan hjälpa till att förbereda."
+    },
+    {
+      "id": "klassa",
+      "text": "Klassa inkomna dokument efter innehåll när mallarna varierar",
+      "svar": "ai",
+      "motivering": "Varierande underlag som måste tolkas. Stickprov behövs."
+    }
+  ],
+  "_kostnad": "Startvärden i övningen Vad kostar det? Alla är antaganden som deltagarna kan ändra. agentPerSteg är kostnaden för ett steg när en agent arbetar, ofta högre än en vanlig fråga eftersom varje steg läser in mycket text.",
+  "kostnad": {
+    "anvandare": 40,
+    "fragor": 20,
+    "perFraga": 0.2,
+    "dagar": 220,
+    "licens": 250,
+    "agentUppgifter": 100,
+    "agentSteg": 50,
+    "agentPerSteg": 1
+  }
+}

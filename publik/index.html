@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' blob:; img-src 'self' data:; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex">
+<meta name="description" content="Leda i AI-takt: en kort kurs för ledningsgrupper och styrelser om AI och fail fast. Inget ni skriver lämnar webbläsaren.">
+<title>Leda i AI-takt</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='9' cy='16' r='5' fill='%232f6b5e'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23a57a12'/%3E%3Ccircle cx='23' cy='16' r='5' fill='%23b8532c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<a class="hoppa" href="#innehall">Hoppa till innehållet</a>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="#start">Leda i AI-takt</a>
+    <nav class="toplinks" aria-label="Huvudmeny" id="meny"></nav>
+  </div>
+</header>
+<div class="status" id="status" hidden>
+  <div class="wrap"><span id="status-text"></span><span class="status-hoger" id="status-hoger"></span></div>
+</div>
+
+<main id="innehall" class="wrap" tabindex="-1">
+  <noscript>
+    <p class="note weak">Kursen behöver JavaScript för att köras i webbläsaren. Inget skickas någonstans.</p>
+  </noscript>
+  <div id="vy" aria-live="polite"></div>
+</main>
+
+<footer class="wrap footer">
+  <span class="maker"><img src="img/mickla.png" alt="Mickla" width="22" height="22"><span>© Engströms Mickla AB 2026</span></span>
+  <span>Leda i AI-takt · prototyp v0.3</span>
+</footer>
+</body>
+</html>
