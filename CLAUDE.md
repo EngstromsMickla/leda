@@ -27,6 +27,13 @@ Arbetsbeskrivning för den som utvecklar kursen vidare, människa eller Claude.
 - I övningen AI, automation eller människa visas kursens förslag först när gruppen ber om det.
 - Startmandat: Generera föreslår ett beslut om vad som får prövas mellan passen (`kurs.startmandat`).
 
+## Grunderna före gissningarna (v0.4)
+
+- Varje block har `grund` i `kurs.js`: tre till sex bilder på cirka fem minuter som kursledaren visar först. Presentationsläget visar grunderna och gissningskorten i en följd (`presLista` i `app.js`); grundbilderna har inget svar att visa.
+- Gissningskorten handlar om konsekvenser för den egna organisationen, inte om fakta som grunderna redan tagit upp.
+- Förstå: hur en språkmodell fungerar (sannolikheter, tre källor till svaret: träning, samtal, verktyg), flyt är inte sanning, från fråga till agent, kostnad. Bedöma: envägs- och tvåvägsdörrar (Bezos 2015), hatt, frisyr, tatuering, klass och mandat, utforska och driva (March 1991). Generera: experiment och projekt, experimentets delar, bygg, mät, lär (Ries 2011), var idéerna finns. Leda: två sorters problem (Snowden och Boone 2007), traditionell problemlösning, fail fast, psykologisk trygghet (Edmondson 1999), spårbundenhet (Sydow, Schreyögg och Koch 2009; David 1985; Arthur 1989), innovatörens dilemma (Christensen 1997; Christensen, Wang och van Bever 2013).
+- Leda har gissningskort om Polaroid (Tripsas och Gavetti 2000) och om den billigare varianten (Christensen 1997), och övningen Våra spår (`svar.leda.spar`), som kan bli ett experimentkort och syns i spelboken.
+
 ## Arbeta parallellt (v0.3)
 
 - Deltagare på egna datorer öppnar kursledarens låsta länk, arbetar och sparar sitt bidrag under Spelbok (`Bidrag_<namn>_<datum>.json`, samma format som spelboken med `meta.av`).
@@ -58,6 +65,7 @@ Arbetsbeskrivning för den som utvecklar kursen vidare, människa eller Claude.
 ## Beslut
 
 - Panelgranskning 2026-10-16 (AI/ML-utvecklare, förändringsledare, cybersäkerhet, pedagogik, problembaserat lärande, ledamot i Plan Bs ledningsgrupp, ledamot i annan ledningsgrupp) gav v0.2: ledningens case, lärandemål med självskattning, förslag först på begäran, nya kort om säkerhet (promptinjektion, skugg-AI), utvärdering mot nuläge och styrelsens frågor med AI-förordningens krav på AI-kunnighet, separat kostnad per agentsteg, startmandat, låst länk, Intern-märkning, Rensa allt, organisationsbeskrivning i kursfilen och mått i Takten.
+- v0.4 (2026-10-16, Dans önskemål): fem minuters grunder i presentationsläget före gissningarna i varje block, och spårbundenhet och innovatörens dilemma i Leda.
 - v0.3 (2026-10-16, Dans önskemål): sammanslagning av deltagarnas bidrag så att alla kan arbeta parallellt, och kursfilsverktyget för nya kunder.
 - Avfärdat i panelen: egen server för realtid (bryter principerna), poäng och prov (fel ton för en ledning), engelsk version (senare).
 - Plan B-material ligger i en lokal kursfil, aldrig i repot (2026-10-16).

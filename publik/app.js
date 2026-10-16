@@ -455,7 +455,15 @@ function vBlock(b) {
     h("section", { class: "fas-sektion", id: "lara" },
       h("div", { class: "fas-huvud" }, h("h2", { text: "Lära" }),
         knapp("Presentera på storskärm", () => oppnaPres(b.id, 0), "", { "data-fokus": "presentera" })),
-      p("Läs frågan högt och låt alla gissa innan svaret visas.", "hjalp"),
+      p("Först grunderna, cirka fem minuter. Sedan gissningar om vad det betyder för er: läs frågan högt och låt alla gissa innan svaret visas.", "hjalp"),
+      b.grund?.length ? h("div", { class: "grunderna", id: "grunderna" },
+        h("div", { class: "grund-huvud" }, h("h3", { text: "Grunderna" }), knapp("Presentera grunderna", () => oppnaPres(b.id, 0), "ghost liten-knapp", { "data-fokus": "presentera-grund" })),
+        h("ol", { class: "grundlista" }, b.grund.map((g) => h("li", { class: "card tight grundkort" },
+          h("h4", { text: g.rubrik }),
+          h("ul", {}, g.punkter.map((t) => h("li", { text: t }))),
+          g.kalla ? p(`Källa: ${g.kalla}`, "hjalp small tight") : null)))) : null,
+      h("div", { class: "grund-huvud" }, h("h3", { text: "Gissa och resonera" }),
+        knapp("Presentera gissningarna", () => oppnaPres(b.id, (b.grund || []).length), "ghost liten-knapp", { "data-fokus": "presentera-gissa" })),
       h("div", { class: "kunskap" }, b.lara.map((kort, i) => {
         const nyckel = `${b.id}-${kort.id}`;
         const visat = visade.has(nyckel);
@@ -466,7 +474,7 @@ function vBlock(b) {
           visat ? kunskapskortInnehall(kort) : null,
           h("div", { class: "kort-knappar" },
             knapp(visat ? "Dölj svaret" : "Visa svaret", () => { visat ? visade.delete(nyckel) : visade.add(nyckel); omrita(); }, "ghost liten-knapp", { "data-fokus": `visa-${nyckel}` }),
-            knapp("Presentera härifrån", () => oppnaPres(b.id, i), "lank-knapp")));
+            knapp("Presentera härifrån", () => oppnaPres(b.id, (b.grund || []).length + i), "lank-knapp")));
       }))),
 
     h("section", { class: "fas-sektion", id: "prova" },
@@ -793,6 +801,23 @@ const OVNINGAR = {
 
   // ---------- Leda ----------
 
+  spar: () => {
+    const ov = kurs.ovningar.spar;
+    const sp = S.svar.leda.spar;
+    return ovningskort("spar",
+      ov.falt.map((f) => falt(f.namn, sp[f.id], (v) => { sp[f.id] = v; }, { rader: 3, max: 3000, platshallare: f.platshallare || "", fokus: `spar-${f.id}` })),
+      h("div", { class: "actions" },
+        knapp("Gör ett experimentkort av det sista fältet", () => {
+          const t = sp.bryta.trim();
+          if (!t) { flash("Skriv först vad ni kan pröva för att bryta spåret.", true); return; }
+          const forsta = t.split(/[.\n]/)[0].slice(0, 120);
+          nyttExperiment({ id: "", titel: `Bryta spåret: ${forsta}`, av: "" });
+          const e = S.svar.generera.experiment[S.svar.generera.experiment.length - 1];
+          e.hypotes = t.slice(0, 600);
+          andrat(true);
+        }, "ghost", { "data-fokus": "spar-experiment" })));
+  },
+
   budskap: () => {
     const ov = kurs.ovningar.budskap;
     const bu = S.svar.leda.budskap;
@@ -866,7 +891,7 @@ const statusNamn = (id) => Object.fromEntries(kurs.ovningar.experiment.status)[i
 function nyttExperiment(ide) {
   const e = {
     id: M.nyttId("exp"), ide: ide ? ide.id : "", titel: ide ? ide.titel : "Nytt experiment", ansvarig: ide ? ide.av : "",
-    hypotes: "", test: "", matt: "", misslyckat: "", timmar: "", stopp: "", klass: "hatt", status: "planerat", resultat: "", lardom: "", beslut: "",
+    hypotes: "", test: "", nulage: "", matt: "", misslyckat: "", timmar: "", stopp: "", klass: "hatt", status: "planerat", resultat: "", lardom: "", beslut: "",
   };
   S.svar.generera.experiment.push(e);
   andrat(true);
@@ -959,6 +984,7 @@ function vSpelbok() {
   const delar = [
     ["Ledningens case", [s.fall.fraga, ...M.BLOCK.map((b) => s[b].fall)].filter(Boolean).length, null, "start/fall", "av fem: frågan och svaren i de fyra blocken"],
     ["Självskattning", M.BLOCK.reduce((n, b) => n + Object.keys(s[b].mal).length, 0), null, "leda/fall-tillbaka", "av tolv lärandemål skattade"],
+    ["Våra spår", [s.leda.spar.framgang, s.leda.spar.laser, s.leda.spar.bryta].filter(Boolean).length, null, "leda/ov-spar", "av tre fält ifyllda"],
     ["Budskapet", [bu.varfor, bu.experiment, bu.misslyckat].filter(Boolean).length, 3, "leda/ov-budskap", "av tre svar skrivna"],
     ["Mandatet", ma.fritt.length + ma.fraga.length + ma.ledning.length, null, "leda/ov-mandat", "rader"],
     ["Takten", [ta.prova, ta.redovisa, ta.besluta, ta.matt, ta.nasta].filter(Boolean).length, 5, "leda/ov-takt", "av fem ifyllda"],
@@ -1324,55 +1350,71 @@ function vKursfil() {
 const presRuta = h("div", { class: "pres", id: "pres", hidden: true, role: "dialog", "aria-modal": "true", "aria-label": "Presentation" });
 document.body.append(presRuta);
 
+// Presentationen visar först blockets grunder och sedan gissningskorten, i en följd.
+function presLista(b) {
+  return [...(b.grund || []).map((g) => ({ typ: "grund", g })), ...b.lara.map((k) => ({ typ: "kort", k }))];
+}
 function oppnaPres(blockId, i) {
-  pres = { block: blockId, i, visat: false };
+  const lista = presLista(blockAv(blockId));
+  pres = { block: blockId, i, visat: lista[i]?.typ === "grund" };
   presRuta.hidden = false;
   document.body.classList.add("presenterar");
   ritaPres();
 }
 function stangPres() {
   if (!pres) return;
-  const id = blockAv(pres.block).lara[pres.i]?.id;
+  const post = presLista(blockAv(pres.block))[pres.i];
   pres = null;
   presRuta.hidden = true;
   document.body.classList.remove("presenterar");
   if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
   render();
-  const el = id && document.getElementById(`kort-${id}`);
+  const el = post && document.getElementById(post.typ === "kort" ? `kort-${post.k.id}` : "grunderna");
   if (el) el.scrollIntoView({ block: "center" });
 }
 function presFram() {
   const b = blockAv(pres.block);
-  if (!pres.visat) { pres.visat = true; visade.add(`${b.id}-${b.lara[pres.i].id}`); }
-  else if (pres.i < b.lara.length - 1) { pres.i += 1; pres.visat = false; }
+  const lista = presLista(b);
+  const post = lista[pres.i];
+  if (!pres.visat) { pres.visat = true; visade.add(`${b.id}-${post.k.id}`); }
+  else if (pres.i < lista.length - 1) { pres.i += 1; pres.visat = lista[pres.i].typ === "grund"; }
   else { stangPres(); return; }
   ritaPres();
 }
 function presBak() {
-  if (pres.visat) pres.visat = false;
+  const lista = presLista(blockAv(pres.block));
+  if (pres.visat && lista[pres.i].typ === "kort") pres.visat = false;
   else if (pres.i > 0) { pres.i -= 1; pres.visat = true; }
   ritaPres();
 }
 function ritaPres() {
   const b = blockAv(pres.block);
-  const kort = b.lara[pres.i];
-  const sista = pres.i === b.lara.length - 1;
+  const lista = presLista(b);
+  const post = lista[pres.i];
+  const sista = pres.i === lista.length - 1;
+  const antalGrund = (b.grund || []).length;
+  const del = post.typ === "grund" ? `Grunderna ${pres.i + 1} av ${antalGrund}` : `Gissa och resonera ${pres.i - antalGrund + 1} av ${b.lara.length}`;
+  const kropp = post.typ === "grund"
+    ? [h("div", { class: "eyebrow", text: `${b.namn}: grunderna` }),
+      h("h2", { class: "pres-fraga", text: post.g.rubrik }),
+      h("ul", { class: "pres-punkter" }, post.g.punkter.map((t) => h("li", { text: t }))),
+      post.g.kalla ? p(`Källa: ${post.g.kalla}`, "hjalp pres-kalla") : null]
+    : [h("div", { class: "eyebrow", text: post.k.rubrik }),
+      h("p", { class: "pres-fraga", text: post.k.gissa }),
+      pres.visat ? h("div", { class: "pres-svar" }, kunskapskortInnehall(post.k)) : h("p", { class: "pres-tips", text: "Gissa först. Mellanslag eller pil höger visar svaret." })];
   fyll(presRuta,
     h("div", { class: "pres-topp" },
-      h("span", { text: `${b.namn} · ${pres.i + 1} av ${b.lara.length}` }),
+      h("span", { text: `${b.namn} · ${del}` }),
       h("div", { class: "pres-verktyg" },
         document.fullscreenEnabled ? knapp(document.fullscreenElement ? "Lämna helskärm" : "Helskärm", () => {
           (document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen()).catch(() => {}).finally(() => setTimeout(ritaPres, 100));
         }, "pres-knapp") : null,
         knapp("Stäng", stangPres, "pres-knapp", { "aria-label": "Stäng presentationen" }))),
-    h("div", { class: "pres-kropp" },
-      h("div", { class: "eyebrow", text: kort.rubrik }),
-      h("p", { class: "pres-fraga", text: kort.gissa }),
-      pres.visat ? h("div", { class: "pres-svar" }, kunskapskortInnehall(kort)) : h("p", { class: "pres-tips", text: "Gissa först. Mellanslag eller pil höger visar svaret." })),
+    h("div", { class: "pres-kropp" }, kropp),
     h("div", { class: "pres-fot" },
-      knapp("Föregående", presBak, "pres-knapp", { disabled: pres.i === 0 && !pres.visat }),
-      h("div", { class: "pres-prickar" }, b.lara.map((_, j) => h("i", { class: j === pres.i ? "nu" : j < pres.i ? "klar" : "" }))),
-      knapp(!pres.visat ? "Visa svaret" : sista ? "Avsluta" : "Nästa", presFram, "pres-knapp fram")));
+      knapp("Föregående", presBak, "pres-knapp", { disabled: pres.i === 0 && (post.typ === "grund" || !pres.visat) }),
+      h("div", { class: "pres-prickar" }, lista.map((x, j) => h("i", { class: [x.typ === "grund" ? "g" : "", j === pres.i ? "nu" : j < pres.i ? "klar" : ""].filter(Boolean).join(" ") }))),
+      knapp(!pres.visat ? "Visa svaret" : sista ? "Avsluta" : post.typ === "grund" && lista[pres.i + 1]?.typ === "kort" ? "Till gissningarna" : "Nästa", presFram, "pres-knapp fram")));
   presRuta.querySelector(".fram")?.focus({ preventScroll: true });
   presRuta.scrollTop = 0;
 }

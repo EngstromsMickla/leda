@@ -252,3 +252,29 @@ test("kursfilsverktyget: id, AI-svar, varningar och tankstreck", () => {
   assert.match(ut._om, /Kund AB/);
   assert.equal(M.lasKursfil(ut).beslutskort.length, 3);
 });
+
+test("varje block har grunder före gissningarna, och Leda har spårbundenhet", () => {
+  for (const b of kurs.block) {
+    assert.ok(b.grund.length >= 3 && b.grund.length <= 6, b.id);
+    for (const g of b.grund) assert.ok(g.rubrik && g.punkter.length >= 2, `${b.id}: ${g.rubrik}`);
+  }
+  const leda = kurs.block.find((b) => b.id === "leda");
+  assert.ok(leda.grund.some((g) => /Spårbundenhet/.test(g.rubrik) && /Sydow/.test(g.kalla)));
+  assert.ok(leda.grund.some((g) => /Innovatörens dilemma/.test(g.rubrik) && /Christensen/.test(g.kalla)));
+  assert.ok(leda.lara.some((k) => k.id === "polaroid"));
+  assert.equal(leda.prova[0], "spar");
+});
+
+test("våra spår sparas, slås ihop och syns i spelboken", () => {
+  const S = fylltTillstand();
+  S.svar.leda.spar = { framgang: "Långa kundrelationer", laser: "Timpriset", bryta: "Pröva fast pris" };
+  const T = M.lasTillstand(M.sparbart(S));
+  assert.deepEqual(T.svar.leda.spar, S.svar.leda.spar);
+  const B = M.lasTillstand(M.sparbart(S));
+  B.svar.leda.spar.laser = "Vår bild av oss som timkonsulter";
+  const { S: ihop } = M.slaIhop(T, B, "Anna");
+  assert.equal(ihop.svar.leda.spar.laser, "Timpriset\n\nAnna: Vår bild av oss som timkonsulter");
+  const html = M.spelbokHtml(ihop, kurs, {});
+  assert.match(html, /Våra spår/);
+  assert.match(html, /Pröva fast pris/);
+});

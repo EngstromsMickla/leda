@@ -453,3 +453,18 @@ fieldset.plain { border: 0; padding: 0; margin: 10px 0 6px; min-width: 0; }
 }
 @media print { .parallellt { display: none !important; } }
 .kf-lista > button { justify-self: start; }
+
+/* Grunderna före gissningarna (v0.4) */
+.grunderna { margin: 4px 0 22px; scroll-margin-top: 110px; }
+.grund-huvud { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin: 14px 0 8px; }
+.grund-huvud h3 { margin: 0; }
+.grundlista { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; counter-reset: grund; }
+.grundkort { counter-increment: grund; margin: 0; border-top: 3px solid var(--accent); }
+.grundkort h4::before { content: counter(grund) ". "; color: var(--muted); font-family: var(--sans); font-size: 14px; }
+.grundkort ul { padding-left: 18px; margin: 4px 0 6px; font-size: 15px; }
+.grundkort li { margin-bottom: 4px; }
+.pres-punkter { margin: 0; padding-left: 1.1em; max-width: 62ch; }
+.pres-punkter li { font-size: clamp(17px, 1.75vw, 24px); line-height: 1.42; margin-bottom: .5em; }
+.pres-kalla { margin-top: 18px; }
+.pres-prickar i.g { border-radius: 2px; }
+@media (max-width: 680px) { .grunderna { scroll-margin-top: 12px; } }

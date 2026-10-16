@@ -4,7 +4,7 @@
 
 export default {
   namn: "Leda i AI-takt",
-  version: "prototyp v0.3",
+  version: "prototyp v0.4",
   upphov: "© Engströms Mickla AB 2026",
 
   start: {
@@ -92,47 +92,68 @@ export default {
       ],
       fallFraga: "Vad i ert case är en regel och vad är en tolkning? Var skulle ett fel bli dyrt, och vad skulle det kosta att använda AI fullt ut?",
       ingress: "Grunderna som en ledning behöver för att fatta beslut om AI: varför svaren varierar, varför varje körning kostar, varför granskning är ett ledningsansvar och hur fort tekniken rör sig.",
+      grund: [
+        {
+          rubrik: "En språkmodell förutsäger nästa ord",
+          punkter: [
+            "Den är tränad på enorma mängder text att räkna ut vilket ord som sannolikt kommer härnäst, om och om igen, tills svaret är klart.",
+            "Det är sannolikheter, inte uppslag i en databas. Därför kan samma fråga ge olika svar, och därför är den bra på utkast, idéer och formuleringar.",
+            "Den förstår inte i mänsklig mening, men mönstren den lärt sig är så rika att resultatet ofta liknar förståelse.",
+          ],
+        },
+        {
+          rubrik: "Var kommer svaret ifrån?",
+          punkter: [
+            "Träningen: det modellen lärde sig av text fram till en viss tidpunkt. Efter det står den kunskapen still.",
+            "Samtalet: det ni ger den, som frågan, instruktioner, dokument och exempel. Det väger ofta tyngst för resultatet.",
+            "Verktygen: webbsökning, era system eller beräkningar, om den har fått tillgång till dem.",
+            "Modellen skiljer inte själv på vad som är sant. Den formulerar det mest sannolika utifrån de tre källorna.",
+          ],
+        },
+        {
+          rubrik: "Flyt är inte sanning",
+          punkter: [
+            "Svaret låter lika säkert när det är fel som när det är rätt.",
+            "Modellen kan hitta på källor, siffror och citat som ser rimliga ut. Det kallas hallucinationer. De blir färre, men de försvinner inte.",
+            "Därför ansvarar alltid en människa för det som används, och granskar i proportion till vad ett fel skulle kosta.",
+          ],
+        },
+        {
+          rubrik: "Från fråga till agent",
+          punkter: [
+            "Fråga och svar: ni frågar, AI svarar, ni bedömer.",
+            "Assistent: AI arbetar i era dokument och verktyg, men ni tar varje steg.",
+            "Agent: AI utför en uppgift i flera steg och flera system, på egen hand. Då behövs en ägare, begränsade behörigheter och mänskliga kontrollpunkter.",
+          ],
+        },
+        {
+          rubrik: "Varje körning är beräkning",
+          punkter: [
+            "Varje fråga körs på servrar i ett datacenter och kostar pengar, el och tid.",
+            "Priset beror på modellen och på hur mycket text som går in och ut. Långa dokument och agenter som arbetar i många steg kostar mest.",
+            "Förmågan ökar och priset per uppgift faller snabbt. Det som var dyrt och svårt i fjol kan vara billigt i dag.",
+          ],
+        },
+      ],
       lara: [
         {
           id: "variation",
-          rubrik: "Samma fråga, olika svar",
-          gissa: "Ni ställer exakt samma fråga till samma AI tre gånger. Får ni samma svar?",
+          rubrik: "Var tål vi variation?",
+          gissa: "Ni vet nu att AI räknar fram sannolika svar. Vilken av era leveranser skulle bli sämre av att svaret varierar från gång till gång?",
           svar: [
-            "Oftast inte. En språkmodell räknar fram ett sannolikt nästa ord, om och om igen, med ett visst mått av slump. Därför blir svaren olika från gång till gång.",
-            "Det är en egenskap, inte ett fel. Variationen gör AI bra på utkast, idéer, formuleringar och alternativ.",
-            "Variationen kan minskas med inställningar, tydliga instruktioner och fasta underlag, men i vanliga AI-tjänster går den inte att ta bort helt.",
-          ],
-          ledning: "Behöver uppgiften samma svar varje gång? Då är det regler, automation eller robotisering som behövs, inte AI.",
-        },
-        {
-          id: "automation",
-          rubrik: "AI eller automation",
-          gissa: "Fakturaunderlaget ska skickas den 25:e varje månad, enligt avtal. Är det en AI-uppgift?",
-          svar: [
-            "Nej. Det är en regel. Regler sköts bäst av vanlig automation eller robotisering: billigt, förutsägbart och samma resultat varje gång.",
-            "AI behövs när underlaget är rörigt, språket varierar eller uppgiften kräver tolkning: läsa, sammanfatta, jämföra, formulera, föreslå.",
+            "Det som måste bli likadant varje gång är regler: fakturering, namnstandarder, överföring mellan system. Regler sköts bäst av vanlig automation eller robotisering, billigt och förutsägbart.",
+            "AI gör nytta där underlaget är rörigt och uppgiften kräver tolkning: läsa, sammanfatta, jämföra, formulera, föreslå. Där är variationen en tillgång.",
             "Ofta blir det bäst i kombination. Automationen sköter flödet, AI gör tolkningen och en människa godkänner.",
           ],
-          ledning: "Fråga om varje förslag: är det här en regel eller en tolkning?",
-        },
-        {
-          id: "kostnad",
-          rubrik: "Varje körning kostar",
-          gissa: "Vad kostar det att ställa en fråga till en AI?",
-          svar: [
-            "Lite, men aldrig noll. Varje körning använder beräkningskraft i ett datacenter: pengar, el och tid. Priset beror på modell och på hur mycket text som går in och ut.",
-            "En enskild fråga är billig. Det som blir en kostnadspost är volymen: många medarbetare hela dagen, långa dokument och agenter som arbetar i hundratals steg på egen hand.",
-            "Den största och mest kraftfulla modellen är inte alltid den rätta. Välj modell efter uppgift, precis som ni väljer konsult efter uppdrag.",
-          ],
-          ledning: "Vet vi vad vår AI-användning kostar i dag, och vad den skulle kosta om alla använde den fullt ut?",
+          ledning: "Om varje AI-förslag hos oss: är det här en regel eller en tolkning?",
         },
         {
           id: "granskning",
-          rubrik: "Den vet inte, den formulerar",
-          gissa: "AI ger er en hänvisning till en rapport, med titel, år och författare. Finns rapporten?",
+          rubrik: "Vems är felet?",
+          gissa: "En AI-sammanfattning av ett förfrågningsunderlag missar ett skall-krav, och anbudet blir underkänt. Vems är felet?",
           svar: [
-            "Kanske. AI kan låta helt säker och ändå ha fel, och kan hitta på källor som ser rimliga ut. Det kallas hallucinationer. De blir färre, men de försvinner inte.",
-            "Därför granskas AI-stött innehåll innan det används, med en noggrannhet som står i proportion till vad ett fel skulle kosta. Ansvaret ligger alltid hos en människa.",
+            "Den som lämnade in anbudet. AI fattar inga beslut och tar inget ansvar; en människa granskar och står för resultatet.",
+            "Granskningen ska stå i proportion till vad ett fel kostar. Ett internt utkast kan läsas snabbt. Ett anbud, en kalkyl eller ett råd till kund kräver att fakta och källor kontrolleras.",
           ],
           ledning: "Var i våra leveranser skulle ett fel bli dyrt, och vem granskar där?",
         },
@@ -148,32 +169,32 @@ export default {
           ledning: "Vilka av våra system skulle en agent kunna skicka något ifrån, och vem skulle märka det?",
         },
         {
-          id: "sammanhang",
-          rubrik: "Underlaget avgör",
-          gissa: "Vad betyder mest för kvaliteten i svaret: vilken AI-modell ni använder, eller vad ni ger den att arbeta med?",
+          id: "kostnad",
+          rubrik: "Vad kostar det fullt ut?",
+          gissa: "Gissa: vad blir dyrast för ett konsultbolag med 50 medarbetare, att alla har en licens eller att några agenter arbetar dygnet runt?",
           svar: [
-            "Oftast det senare. AI kan bara arbeta med det den har lärt sig och det den får veta: underlag, instruktion, exempel och syfte. Bra underlag och en tydlig beställning slår ofta en bättre modell.",
-            "För ett kunskapsföretag är det goda nyheter. Förmågan att strukturera information, ställa rätt fråga och bedöma svaret är just den kompetens ni redan säljer.",
+            "Det beror på, och det är poängen. Licenser är förutsägbara. Användning och agenter växer med volymen och kan på kort tid bli den största posten.",
+            "Den största och mest kraftfulla modellen är inte alltid den rätta. Välj modell efter uppgift, precis som ni väljer konsult efter uppdrag.",
           ],
-          ledning: "Vilken av våra kunskaper blir mer värd när AI blir vanlig?",
+          ledning: "Vet vi vad vår AI-användning kostar i dag, och vad den skulle kosta om alla använde den fullt ut?",
         },
         {
-          id: "agent",
-          rubrik: "Från fråga till agent",
-          gissa: "Vad är skillnaden mellan att chatta med en AI och att låta en agent arbeta?",
+          id: "sammanhang",
+          rubrik: "Vilken kunskap blir mer värd?",
+          gissa: "Om underlaget betyder mer än modellen, vilken av er kompetens blir mer värd när AI blir vanlig, och vilken blir mindre värd?",
           svar: [
-            "Tre lägen. Fråga och svar: ni frågar, AI svarar, ni bedömer. Assistent: AI arbetar i era dokument och verktyg, men ni tar varje steg. Agent: AI utför en uppgift i flera steg och flera system, på egen hand.",
-            "Ju närmare agenten, desto mer behövs en utsedd ägare, begränsade behörigheter och en mänsklig kontrollpunkt innan något påverkar kunder, ekonomi eller avtal.",
+            "Mer värd: att strukturera information, ställa rätt fråga, veta vad som är ett bra svar och ta ansvar för det. Mindre värd: att ta fram det första utkastet, sammanställa och skriva om.",
+            "För ett kunskapsföretag inom information är det goda nyheter, om bolaget säljer omdömet och inte timmarna det tog att skriva.",
           ],
-          ledning: "Vem äger varje agent hos oss, och var står människan i flödet?",
+          ledning: "Vilken av våra kunskaper blir mer värd, och säljer vi den i dag?",
         },
         {
           id: "takt",
-          rubrik: "Takten",
+          rubrik: "Hur länge håller planen?",
           gissa: "Hur länge håller en detaljerad treårsplan för AI?",
           svar: [
-            "Inte länge. Förmågan förbättras märkbart på månader, och priset för samma uppgift faller. Det som var dyrt och svårt att bygga själv för ett år sedan kan i dag göras på en eftermiddag.",
-            "Därför fungerar korta varv bättre än långa planer: pröva smått, redovisa ärligt, besluta och ta nästa varv. Det är fail fast.",
+            "Inte länge. Förmågan förbättras märkbart på månader, och priset för samma uppgift faller. Det som var svårt att bygga själv för ett år sedan kan i dag göras på en eftermiddag.",
+            "Därför fungerar korta varv bättre än långa planer: pröva smått, redovisa ärligt, besluta och ta nästa varv.",
           ],
           ledning: "Vilka av våra beslut och planer är byggda för en takt som inte längre gäller?",
         },
@@ -224,6 +245,43 @@ export default {
       ],
       fallFraga: "Vilka beslut kräver ert case? Vilka är hattar som någon annan kan fatta redan i veckan, och vilka är tatueringar?",
       ingress: "Beslut om AI klassas efter hur svåra de är att ångra: hatt, frisyr eller tatuering. Klassen avgör vem som beslutar och hur fort. Bedöma är grinden mellan att utforska och att driva.",
+      grund: [
+        {
+          rubrik: "Dörrar man kan gå tillbaka genom",
+          punkter: [
+            "Amazons grundare Jeff Bezos skiljer mellan tvåvägsdörrar, som går att gå tillbaka genom, och envägsdörrar, som inte gör det.",
+            "Tvåvägsdörrar ska beslutas snabbt, av få och nära arbetet. Envägsdörrar förtjänar tid, underlag och ledningens uppmärksamhet.",
+            "Det vanliga misstaget i stora organisationer är att behandla alla beslut som envägsdörrar. Då blir allt långsamt.",
+          ],
+          kalla: "Bezos, brev till Amazons aktieägare för 2015.",
+        },
+        {
+          rubrik: "Hatt, frisyr eller tatuering",
+          punkter: [
+            "Hatt: passar den inte, byter ni den i morgon. Ett test, ett verktyg på prov, ett nytt forum.",
+            "Frisyr: går att ändra, men det tar tid innan den växt ut. Ett nytt arbetssätt, ett godkänt verktyg, ett erbjudande.",
+            "Tatuering: permanent, eller dyr och smärtsam att ta bort. Plattform, kunddata, prismodell, policy.",
+          ],
+        },
+        {
+          rubrik: "Klassen avgör vem och hur fort",
+          punkter: [
+            "Hattar beslutas nära arbetet, samma vecka, inom ett mandat.",
+            "Frisyrer samlas och beslutas i en fast rytm.",
+            "Tatueringar beslutar ledningen, efter ordentligt underlag.",
+            "När tekniken förändras flyttar sig gränserna. Därför behöver klassningen göras om, inte bara en gång.",
+          ],
+        },
+        {
+          rubrik: "Utforska och driva",
+          punkter: [
+            "Att utforska nya möjligheter och att driva det som fungerar kräver olika mål, mått och kultur. Ett bolag behöver båda.",
+            "Utforskandet mäts på lärande, driften på lönsamhet.",
+            "Bedömningen är grinden mellan dem: det som har visat sig fungera ska flyttas över, och det som inte gör det ska stoppas.",
+          ],
+          kalla: "March, 1991.",
+        },
+      ],
       lara: [
         {
           id: "klasser",
@@ -291,14 +349,49 @@ export default {
       ],
       fallFraga: "Vilket litet test skulle lära er mest om ert case före nästa pass? Skriv det som ett experimentkort.",
       ingress: "Ledningens uppgift är att ta emot och sortera en ström av idéer, inte att producera alla själv. Här prövar ni själva, skriver idéer och gör experimentkort som ska redovisas på nästa pass. Innan ni går hem beslutar ni om ett startmandat för testerna.",
+      grund: [
+        {
+          rubrik: "Ett experiment är inte ett litet projekt",
+          punkter: [
+            "Ett projekt har en känd lösning. Det planeras, genomförs och lyckas när planen följs.",
+            "Ett experiment har en fråga. Det är klart när frågan är besvarad, oavsett om svaret är ja eller nej.",
+            "Ett experiment som drivs som ett projekt tar aldrig slut. Ett projekt som drivs som ett experiment blir aldrig färdigt.",
+          ],
+        },
+        {
+          rubrik: "Experimentets delar",
+          punkter: [
+            "Hypotes: vi tror att ... leder till ...",
+            "Minsta möjliga test, och hur vi gör i dag att jämföra med.",
+            "Mått, budget i timmar och ett stoppdatum.",
+            "Det här räknas som misslyckat. Skrivet i förväg, så att ingen behöver försvara det efteråt.",
+          ],
+        },
+        {
+          rubrik: "Bygg, mät, lär",
+          punkter: [
+            "Gör den minsta versionen som kan ge ett svar, mät vad som händer och lär av det, och ta sedan nästa varv.",
+            "Det korta varvet är poängen. Ju snabbare ni får veta, desto billigare blir både framgångarna och misstagen.",
+          ],
+          kalla: "Ries, The Lean Startup, 2011.",
+        },
+        {
+          rubrik: "Var idéerna finns",
+          punkter: [
+            "Hos dem som gör arbetet. De vet vilka uppgifter som tar tid, återkommer och irriterar.",
+            "Också i kundernas frågor, i vad andra gör och i de egna testerna.",
+            "Ledningens roll är att se till att strömmen finns, att någon sorterar den, och att det som sorteras fram faktiskt prövas.",
+          ],
+        },
+      ],
       lara: [
         {
-          id: "kallor",
-          rubrik: "Var finns idéerna?",
-          gissa: "Var finns de bästa AI-idéerna i ett konsultbolag?",
+          id: "flode",
+          rubrik: "Hur långt är vårt idéflöde?",
+          gissa: "En konsult kommer på en bra AI-idé på måndag. Hur lång tid tar det hos er innan den är prövad?",
           svar: [
-            "Hos dem som gör arbetet. De vet vilka uppgifter som tar tid, återkommer och irriterar. Andra källor är kundernas frågor, bevakning av vad andra gör, och de egna testerna.",
-            "Ledningens roll är att se till att strömmen finns, att den når någon som sorterar, och att det som sorteras fram faktiskt prövas.",
+            "I de flesta organisationer veckor eller månader, och oftast blir den aldrig prövad. Inte för att någon sa nej, utan för att ingen visste vem som skulle säga ja.",
+            "Det är strömmen ledningen ansvarar för: att idéer når någon som sorterar, och att små tester får starta inom ett mandat.",
           ],
           ledning: "Hur kommer en idé från en medarbetare till ett beslut hos oss i dag, och hur lång tid tar det?",
         },
@@ -314,11 +407,11 @@ export default {
         },
         {
           id: "kortet",
-          rubrik: "Experimentkortet",
-          gissa: "Vad skiljer ett experiment från ett projekt?",
+          rubrik: "Experiment eller projekt?",
+          gissa: "Tänk på era pågående AI-initiativ. Är något av dem egentligen ett experiment som drivs som ett projekt, utan stoppdatum och utan att någon vet vad som räknas som misslyckat?",
           svar: [
-            "Ett stoppdatum och ett bestämt sätt att misslyckas. Experimentkortet har sex rader: hypotes, minsta möjliga test, ansvarig, mått, budget i timmar och stoppdatum. Plus en sjunde: vad räknas som misslyckat?",
-            "Ett misslyckat test är ett resultat. Ett test utan stoppdatum är ett projekt.",
+            "Det är vanligt, och det är dyrt. Initiativet lever vidare för att ingen har bestämt när det ska avgöras, och ingen vågar säga att det inte fungerar.",
+            "Botemedlet är enkelt: skriv det på ett experimentkort med stoppdatum, och redovisa på utsatt dag oavsett resultat.",
           ],
           ledning: "Vilket av våra pågående AI-initiativ skulle klara att skrivas på ett experimentkort?",
         },
@@ -366,6 +459,64 @@ export default {
       ],
       fallFraga: "Vad behöver organisationen höra om ert case, från vem, och vad har ni nu bestämt som ni inte hade bestämt före kursen?",
       ingress: "Klassisk förändringsledning förbereder organisationen för en känd lösning. Vid fail fast finns ingen färdig lösning. Ledningens uppgift blir att sätta ramen: varför vi experimenterar, vad som får prövas utan att fråga, i vilken takt, och hur det som fungerar tas i drift.",
+      grund: [
+        {
+          rubrik: "Två sorters problem",
+          punkter: [
+            "I stabila och komplicerade situationer går orsak och verkan att analysera i förväg. Experter utreder, ledningen beslutar, organisationen genomför.",
+            "I snabbrörliga och komplexa situationer syns orsak och verkan först i efterhand. Där fungerar det bättre att pröva, iaktta och agera.",
+            "AI just nu är en komplex situation. Tekniken, priserna och kundernas förväntningar ändras medan ni analyserar.",
+          ],
+          kalla: "Snowden och Boone, A Leader's Framework for Decision Making, Harvard Business Review, 2007.",
+        },
+        {
+          rubrik: "Traditionell problemlösning",
+          punkter: [
+            "Utred, besluta, genomför. Målet är att göra rätt från början.",
+            "Ett misslyckande är en avvikelse från planen, och någon har gjort fel.",
+            "Det fungerar väl när förutsättningarna står still medan planen genomförs.",
+          ],
+        },
+        {
+          rubrik: "Fail fast",
+          punkter: [
+            "Många små och billiga försök i stället för en stor satsning.",
+            "Stoppkriterier bestäms i förväg. Lärandet är resultatet.",
+            "Ett misslyckat test som redovisas är information, inte ett misslyckande för den som gjorde det.",
+            "Fast handlar om att få veta snabbt, inte om att misslyckas ofta.",
+          ],
+          kalla: "Ries, The Lean Startup, 2011.",
+        },
+        {
+          rubrik: "Det fail fast kräver",
+          punkter: [
+            "Psykologisk trygghet: att det är tryggt att säga \"det fungerade inte\" utan att det kostar något.",
+            "Ett mandat som säger vad som får prövas utan att fråga, och en takt för när det redovisas.",
+            "Gränser: fail fast hör hemma i utforskandet, inte i leveransen till kund.",
+          ],
+          kalla: "Edmondson, Psychological Safety and Learning Behavior in Work Teams, Administrative Science Quarterly, 1999.",
+        },
+        {
+          rubrik: "Spårbundenhet",
+          punkter: [
+            "Det som gjorde oss framgångsrika förstärker sig självt. Rutiner, kunskaper, kundrelationer, system och prismodell passar allt bättre ihop och blir svårare att ändra för varje år.",
+            "Tre faser: först finns många möjliga vägar, sedan smalnar självförstärkande mekanismer av valen, till sist är organisationen inlåst.",
+            "Mekanismerna: delar som samordnas och kompletterar varandra, lärande som gör oss bättre på det vi redan gör, och förväntningar om att allt fortsätter som förut.",
+            "Att bryta ett spår kräver avsiktliga ingrepp. Det sker sällan av sig självt.",
+          ],
+          kalla: "Sydow, Schreyögg och Koch, Organizational Path Dependence: Opening the Black Box, Academy of Management Review, 2009. Se även David, 1985, och Arthur, 1989.",
+        },
+        {
+          rubrik: "Innovatörens dilemma",
+          punkter: [
+            "Välskötta bolag blir omsprungna just för att de gör rätt: lyssnar på sina bästa kunder och satsar där marginalen är högst.",
+            "Ny teknik börjar ofta sämre men billigare, för kunder som de etablerade inte bryr sig om. Sedan blir den tillräckligt bra för allt fler.",
+            "Christensens svar är en egen enhet med egna mål, mått och kostnader, skyddad från det befintliga.",
+            "Han tillämpade senare resonemanget på konsultbranschen: analys som juniora konsulter gör kan bli billig och standardiserad. Hur väl det har slagit in är omdiskuterat, men AI gör frågan skarpare.",
+          ],
+          kalla: "Christensen, The Innovator's Dilemma, 1997. Christensen, Wang och van Bever, Consulting on the Cusp of Disruption, Harvard Business Review, oktober 2013.",
+        },
+      ],
       lara: [
         {
           id: "varfor",
@@ -387,6 +538,28 @@ export default {
             "Sanningens ögonblick kommer när testet möter linjen. Antas det som fungerar, eller stoppas det i tysthet? Det avgörs av ledningens agerande, inte av dess ord.",
           ],
           ledning: "Vad hände senast någon hos oss redovisade ett misslyckat försök?",
+        },
+        {
+          id: "polaroid",
+          rubrik: "Kunnandet fanns, men inte bilden av affären",
+          gissa: "Polaroid utvecklade tidigt avancerad teknik för digitala bilder. Varför tog de ändå inte den marknaden?",
+          svar: [
+            "Inte för att tekniken saknades. Tripsas och Gavetti visar att ledningens bild av affären stod i vägen: Polaroid tjänade pengarna på filmen, inte på kameran, och en affär utan film passade inte in.",
+            "Spårbundenhet sitter lika mycket i ledningens föreställningar som i system och rutiner.",
+          ],
+          ledning: "Vilken föreställning om vår affär skulle kunna hindra oss på samma sätt? Att det är timmen vi säljer?",
+          kalla: "Tripsas och Gavetti, Capabilities, Cognition, and Inertia: Evidence from Digital Imaging, Strategic Management Journal, 2000.",
+        },
+        {
+          id: "dilemma",
+          rubrik: "Om den billigare varianten räcker",
+          gissa: "En AI-tjänst gör 70 procent av det ni gör, till en tiondel av priset. Vilka kunder går först?",
+          svar: [
+            "Oftast de minst krävande, de ni själva tjänar minst på. Därför är det lätt att låta dem gå, och just så börjar det enligt Christensen.",
+            "Frågan för ledningen är inte om den billigare varianten är sämre, utan när den blir tillräckligt bra för allt fler.",
+          ],
+          ledning: "Ska vi själva bygga den billigare varianten, innan någon annan gör det?",
+          kalla: "Christensen, 1997.",
         },
         {
           id: "ambidex",
@@ -420,7 +593,7 @@ export default {
           ledning: "Vilka av de fem frågorna kan vi besvara för styrelsen i dag?",
         },
       ],
-      prova: ["budskap", "mandat", "takt", "karta"],
+      prova: ["spar", "budskap", "mandat", "takt", "karta"],
       redovisa: {
         rubrik: "Vad säger vi på måndag?",
         text: "Skriv vad ledningen säger till organisationen efter kursen, och vem som säger det.",
@@ -571,6 +744,18 @@ export default {
       status: [["planerat", "Planerat"], ["pagar", "Pågår"], ["lyckat", "Klart: lyckat"], ["misslyckat", "Klart: misslyckat"], ["stoppat", "Stoppat"]],
       beslut: [["", "Inte beslutat"], ["anta", "Anta"], ["justera", "Justera och pröva igen"], ["stoppa", "Stoppa"]],
     },
+    spar: {
+      rubrik: "Våra spår",
+      tid: "20 min",
+      vem: "Hela ledningen resonerar, någon skriver",
+      info: "Spårbundenhet syns sällan inifrån",
+      text: "Börja med det som har gått bra. Det som har gjort er framgångsrika är också det som håller er kvar. Det sista fältet blir gärna ett experimentkort.",
+      falt: [
+        { id: "framgang", namn: "Det som har gjort oss framgångsrika" },
+        { id: "laser", namn: "Så håller det oss kvar", platshallare: "Prismodell, kunder, kompetens, system, belöningar, föreställningar om vad vi är" },
+        { id: "bryta", namn: "Det vi kan pröva för att bryta spåret" },
+      ],
+    },
     budskap: {
       rubrik: "Budskapet",
       tid: "25 min",
@@ -631,10 +816,10 @@ export default {
       form: "En förmiddag, cirka 3,5 timmar",
       delar: [
         ["15 min", "Start: deltagare, ledningens case och vad ni vill kunna efter kursen"],
-        ["40 min", "Förstå: kunskapspass på storskärm"],
+        ["40 min", "Förstå: grunderna på fem minuter, sedan gissningarna"],
         ["45 min", "Förstå: samma fråga tre gånger, AI eller automation, vad kostar det"],
         ["15 min", "Paus"],
-        ["60 min", "Bedöma: kunskapspass, beslutsguiden, sortera besluten och flytta gränserna"],
+        ["60 min", "Bedöma: grunderna, gissningarna, beslutsguiden, sortera besluten och flytta gränserna"],
         ["35 min", "Generera: idéflödet och de första experimentkorten"],
         ["5 min", "Besluta om startmandatet för testerna"],
         ["5 min", "Spara spelboken"],
@@ -655,7 +840,7 @@ export default {
       delar: [
         ["5 min", "Läs in spelboken"],
         ["40 min", "Generera: experimenten redovisas, anta, justera eller stoppa"],
-        ["50 min", "Generera: promptlabbet"],
+        ["50 min", "Generera: grunderna, gissningarna och promptlabbet"],
         ["25 min", "Nya experimentkort, beslut och tillbaka till ert case"],
       ],
     },
@@ -665,11 +850,12 @@ export default {
       form: "Cirka 2 timmar",
       delar: [
         ["5 min", "Läs in spelboken"],
-        ["25 min", "Leda: kunskapspass"],
-        ["25 min", "Budskapet"],
-        ["25 min", "Mandatet"],
-        ["15 min", "Takten"],
-        ["20 min", "Från försök till drift"],
+        ["25 min", "Leda: grunderna om fail fast och spårbundenhet, sedan gissningarna"],
+        ["20 min", "Våra spår"],
+        ["20 min", "Budskapet"],
+        ["20 min", "Mandatet"],
+        ["10 min", "Takten"],
+        ["15 min", "Från försök till drift"],
         ["5 min", "Självskattning mot lärandemålen, spelboken fastställs och sparas"],
       ],
     },
@@ -691,7 +877,7 @@ export default {
       },
       {
         rubrik: "Under passet",
-        text: "Varje block följer samma varv: Lära, Pröva, Redovisa, Besluta. På kunskapspassen visas en fråga först; gissa innan svaret visas. Använd Presentera för storskärm, piltangenterna för att bläddra och mellanslag för att visa svaret.",
+        text: "Varje block följer samma varv: Lära, Pröva, Redovisa, Besluta. Lära börjar med grunderna, fem minuter på storskärm, och fortsätter med gissningar om vad det betyder för er; gissa innan svaret visas. Presentera visar båda delarna i följd. Piltangenterna bläddrar och mellanslag visar svaret.",
       },
       {
         rubrik: "I slutet av varje pass",
