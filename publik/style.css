@@ -477,3 +477,16 @@ fieldset.plain { border: 0; padding: 0; margin: 10px 0 6px; min-width: 0; }
 .utv-falt { margin-top: 14px; }
 #utvardering { scroll-margin-top: 110px; }
 @media (max-width: 680px) { #utvardering { scroll-margin-top: 12px; } }
+
+/* Om kursen (v0.8) */
+.om-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
+.om-del h2 { margin-top: 24px; }
+.kontaktkort { margin-top: 24px; border-top: 3px solid var(--accent); scroll-margin-top: 110px; }
+.kontaktkort .btn { margin-top: 4px; }
+.kontakt-forklaring { margin-top: 10px; }
+.kontakt-reserv { display: grid; gap: 6px; justify-items: start; margin-top: 6px; }
+.kontaktkort h3 { margin: 4px 0 2px; }
+.kontakt-rad { margin: 6px 0 0; font-weight: 600; overflow-wrap: anywhere; }
+.litteratur { padding-left: 20px; margin: 0 0 20px; font-size: 15px; max-width: 80ch; }
+.litteratur li { margin-bottom: 6px; }
+@media (max-width: 900px) { .om-layout { grid-template-columns: 1fr; } .kontaktkort { position: static; } }

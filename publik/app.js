@@ -226,7 +226,7 @@ function valrad(namn, val, aktivt, satt, { aria = "" } = {}) {
 // ---------- Sidhuvud, status, sidfot ----------
 
 const DOLDA = ["kursfil"];
-const MENY = [["start", "Start"], ["forsta", "Förstå"], ["bedoma", "Bedöma"], ["generera", "Generera"], ["leda", "Leda"], ["spelbok", "Spelbok"], ["guide", "Så går det till"]];
+const MENY = [["start", "Start"], ["forsta", "Förstå"], ["bedoma", "Bedöma"], ["generera", "Generera"], ["leda", "Leda"], ["spelbok", "Spelbok"], ["guide", "Så går det till"], ["om", "Om kursen"]];
 
 function rutt() {
   const raw = decodeURIComponent(location.hash.replace(/^#/, ""));
@@ -277,7 +277,7 @@ function render() {
   visaMeny();
   visaStatus();
   const mal = document.getElementById("vy");
-  const vyer = { start: vStart, spelbok: vSpelbok, guide: vGuide, kursfil: vKursfil };
+  const vyer = { start: vStart, spelbok: vSpelbok, guide: vGuide, kursfil: vKursfil, om: vOm };
   fyll(mal, lasKod ? vLas() : (vyer[vy] || (() => vBlock(blockAv(vy))))());
   if (vy === "kursfil") visaVarningar();
   document.title = vy === "start" ? kurs.namn : `${(MENY.find(([id]) => id === vy) || [0, kurs.kursfilverktyg.rubrik])[1]} · ${kurs.namn}`;
@@ -1073,6 +1073,61 @@ function vSpelbok() {
       ta.nasta ? h("li", { text: `Nästa gång ni ses om det här: ${ta.nasta}.` }) : h("li", { text: "Bestäm när ni ses nästa gång, under Takten i Leda." }),
       ex.filter((e) => e.status === "planerat" || e.status === "pagar").map((e) => h("li", { text: `${e.titel}: ${e.ansvarig || "ansvarig saknas"}, stopp ${e.stopp || "saknas"}.` }))),
     rensaKnapp(),
+  ];
+}
+
+// ---------- Om kursen ----------
+
+const kontaktSvar = { amne: "", namn: "", organisation: "", meddelande: "" };
+
+function vKontakt(k) {
+  const reserv = h("div", { class: "kontakt-reserv", hidden: true });
+  // Adressen hamnar i länken först när besökaren klickar, så att den aldrig ligger i sidan i förväg.
+  const lank = h("a", { class: "btn", href: "#om/kontakt", "data-fokus": "kontakt-skicka" }, k.knapp);
+  const uppdatera = () => {};
+  lank.addEventListener("click", (e) => {
+    if (!kontaktSvar.meddelande.trim()) { e.preventDefault(); flash("Skriv ett meddelande först.", true); return; }
+    const m = M.kontaktMejl(k, kontaktSvar);
+    lank.href = m.lank;
+    fyll(reserv,
+      p(`${k.reserv} ${m.adress}.`, "hjalp small tight"),
+      knapp("Kopiera texten", (ev) => kopiera(`${m.amne}\n\n${m.kropp}`, ev.currentTarget), "ghost liten-knapp"),
+      knapp("Kopiera adressen", (ev) => kopiera(m.adress, ev.currentTarget), "ghost liten-knapp"));
+    reserv.hidden = false;
+  });
+  const amne = h("select", { "data-fokus": "kontakt-amne" }, k.amnen.map((t) => h("option", { value: t, selected: kontaktSvar.amne === t }, t)));
+  amne.addEventListener("change", () => { kontaktSvar.amne = amne.value; uppdatera(); });
+  if (!kontaktSvar.amne) kontaktSvar.amne = k.amnen[0];
+  const faltEl = k.falt.map((f) => {
+    const el = f.id === "meddelande"
+      ? h("textarea", { rows: 5, maxlength: M.MAX_MEJL, "data-fokus": `kontakt-${f.id}` }, kontaktSvar[f.id])
+      : h("input", { type: "text", maxlength: f.id === "namn" ? 120 : 160, value: kontaktSvar[f.id], "data-fokus": `kontakt-${f.id}`, autocomplete: f.id === "namn" ? "name" : "organization" });
+    el.addEventListener("input", () => { kontaktSvar[f.id] = el.value; uppdatera(); });
+    return h("label", { class: "falt-rad" }, h("span", { text: f.namn }), el);
+  });
+  uppdatera();
+  return h("aside", { class: "card kontaktkort", id: "kontakt" },
+    h("div", { class: "eyebrow", text: k.rubrik }),
+    h("h3", { text: k.namn }),
+    p(k.roll, "hjalp tight"),
+    p(k.text, "small"),
+    h("label", { class: "falt-rad" }, h("span", { text: "Ärende" }), amne),
+    faltEl,
+    lank,
+    p(k.forklaring, "hjalp small kontakt-forklaring"),
+    reserv);
+}
+
+function vOm() {
+  const o = kurs.om;
+  const k = o.kontakt;
+  return [
+    ...rubrikrad(kurs.version.replace("prototyp", "Första utgåvan,"), o.rubrik, o.ingress),
+    h("div", { class: "om-layout" },
+      h("div", {}, o.delar.map((d) => h("section", { class: "om-del" }, h("h2", { text: d.rubrik }), d.stycken.map((t) => p(t))))),
+      vKontakt(k)),
+    h("h2", { text: o.litteraturRubrik }),
+    h("ul", { class: "litteratur" }, o.litteratur.map((t) => h("li", { text: t }))),
   ];
 }
 

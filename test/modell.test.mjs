@@ -333,3 +333,28 @@ test("startmandatet har sex timmar som standard, uppföljningen ryms på en timm
   const leda = kurs.block.find((b) => b.id === "leda");
   assert.ok(leda.lara.some((k) => /2023/.test(k.kalla || "") && /58 procent/.test(k.svar.join(" "))));
 });
+
+test("Om kursen har upplägg, bakgrund, kontakt och litteratur", () => {
+  assert.ok(kurs.om.delar.length >= 3);
+  assert.deepEqual(kurs.om.kontakt.adress, ["dan", "mickla.se"]);
+  assert.ok(kurs.om.litteratur.length >= 10);
+  const kallor = kurs.block.flatMap((b) => [...b.grund, ...b.lara]).map((x) => x.kalla || "").join(" ");
+  for (const namn of ["Sydow", "Christensen", "Conway", "Tripsas", "Snowden", "Edmondson", "Ries", "March", "Bezos", "Prosci"]) {
+    assert.ok(kallor.includes(namn), `källan ${namn} används i kursen`);
+    assert.ok(kurs.om.litteratur.some((t) => t.includes(namn)), `${namn} finns i litteraturlistan`);
+  }
+});
+
+test("kontaktformuläret sätter ihop ett mejl till rätt adress utan att något skickas", () => {
+  const k = kurs.om.kontakt;
+  const m = M.kontaktMejl(k, { amne: k.amnen[2], namn: "Eva Exempel", organisation: "Exempel AB", meddelande: "Vi vill boka kursen & undrar över pris?" });
+  assert.equal(m.adress, "dan@mickla.se");
+  assert.ok(m.lank.startsWith("mailto:dan@mickla.se?subject="));
+  assert.equal(decodeURIComponent(m.lank.split("subject=")[1].split("&body=")[0]), "Leda i AI-takt: Intresse av att genomföra kursen");
+  const kropp = decodeURIComponent(m.lank.split("&body=")[1]);
+  assert.match(kropp, /Vi vill boka kursen & undrar över pris\?/);
+  assert.match(kropp, /Hälsningar\nEva Exempel\nExempel AB$/);
+  const ond = M.kontaktMejl(k, { amne: "Något annat", meddelande: "x".repeat(5000) });
+  assert.equal(ond.amne, "Leda i AI-takt: Fråga om kursen");
+  assert.equal(ond.kropp.length, M.MAX_MEJL);
+});

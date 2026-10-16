@@ -5,8 +5,8 @@ Arbetsbeskrivning för den som utvecklar kursen vidare, människa eller Claude.
 ## Sammanhang
 
 - Kurs för ledningsgrupper och styrelser i kunskapsföretag: grunderna om AI (variation, kostnad per körning, AI eller automation, granskning, agenter, takt) och praktiska metoder för fail fast, så att ledningen kan leda ett bolag i snabb teknikomställning. Vi utgår från att deltagarna kan leda ett bolag.
-- Bygger på Dan Engströms förslag "AI-utbildning för Plan B" (2026-10-06): fyra block (Förstå, Bedöma, Generera, Leda), samma varv i varje (Lära, Pröva, Redovisa, Besluta), beslutsanalogin hatt, frisyr eller tatuering, ambidexteritet (March 1991; O'Reilly och Tushman 2004) och Prosci (2018) om vem som säger varför och hur.
-- Upphov: Dan Engström, Engströms Mickla AB. Claude föreslår, Dan beslutar. Körs som test på mickla.se; om Plan B vill ha kursen får de tillgång till det de behöver.
+- Bygger på Dan Engströms förslag till AI-utbildning för en ledningsgrupp (2026-10-06): fyra block (Förstå, Bedöma, Generera, Leda), samma varv i varje (Lära, Pröva, Redovisa, Besluta), beslutsanalogin hatt, frisyr eller tatuering, ambidexteritet (March 1991; O'Reilly och Tushman 2004) och Prosci (2018) om vem som säger varför och hur.
+- Upphov: Dan Engström, Engströms Mickla AB. Claude föreslår, Dan beslutar. Körs som test på mickla.se.
 - Format: en förmiddag (cirka 3,5 timmar) och därefter ett eller två pass på cirka 2 timmar. Kursledaren håller kunskapspassen på storskärm; allt som handlar om att pröva görs av någon i ledningen.
 
 ## Fasta principer
@@ -45,7 +45,7 @@ Arbetsbeskrivning för den som utvecklar kursen vidare, människa eller Claude.
 - Mallen i `publik/exempel/` har fält som börjar med `_` som förklarar resten. De läses inte av sajten. Mallen kan laddas ner från startsidan och från Så går det till.
 - Kursfilsverktyget (`#kursfil`, länkat från startsidan och Så går det till, inte i menyn) är den enda vägen till en ny kursfil; mallen laddas inte ner separat. Börja från exemplet (påhittat bolag), en befintlig fil eller kursens nuvarande; kopiera prompten (med mallen som strukturexempel) till ett godkänt AI-verktyg tillsammans med organisationens dokument; klistra in svaret (`tolkaAiSvar` tar bort kodstaket, ger kort giltiga id och läser `_saknas`); granska i formuläret; kvalitetskontrollen (`kursfilVarningar`) visar vad som saknas och kan byta tankstreck; ladda ner (`kursfilTillJson`) eller pröva i kursen. Utkastet hålls i flikens sessionStorage.
 - Byte till en kursfil för en annan organisation startar kursen om från början, så att arbete aldrig blandas mellan organisationer.
-- Plan Bs kursfil (`Plan_B_kursfil.json`) bygger på AI-policy v0.3, AI-instruktion v0.1, Strategi 2026+5, Kapitel 2026/27 Lyft! och förslaget till FoI-råd. Den ligger hos Dan, inte i repot.
+- Verkliga kursfiler ligger hos Dan, aldrig i repot.
 
 ## Spelboken och länken
 
@@ -64,14 +64,16 @@ Arbetsbeskrivning för den som utvecklar kursen vidare, människa eller Claude.
 
 ## Beslut
 
-- Panelgranskning 2026-10-16 (AI/ML-utvecklare, förändringsledare, cybersäkerhet, pedagogik, problembaserat lärande, ledamot i Plan Bs ledningsgrupp, ledamot i annan ledningsgrupp) gav v0.2: ledningens case, lärandemål med självskattning, förslag först på begäran, nya kort om säkerhet (promptinjektion, skugg-AI), utvärdering mot nuläge och styrelsens frågor med AI-förordningens krav på AI-kunnighet, separat kostnad per agentsteg, startmandat, låst länk, Intern-märkning, Rensa allt, organisationsbeskrivning i kursfilen och mått i Takten.
-- v0.7 (2026-10-16, Dans beslut): kursen riktar sig bara till ledningsgrupper och styrelser, smalt scope är mer träffsäkert; inget talarmanus, grundbildernas punkter är självinstruerande; kursutvärdering i slutet av Leda (`svar.utvardering`), som slås ihop utan namn, syns i spelboken och kan kopieras som text till kursledaren; frågan om hur många timmar ett test får ta i startmandatet, sex timmar om den inte besvaras (`svar.generera.mandatTimmar`, `kurs.startmandatTimmar`); uppföljningspass på en timme efter cirka tre månader; Prosci-uppgiften uppdaterad till 12:e upplagan 2023 (58 procent vill höra om personliga konsekvenser från närmaste chef). Plan B:s kursfil uppdateras av Dan när policy och instruktion är fastställda.
+- Panelgranskning 2026-10-16 (AI/ML-utvecklare, förändringsledare, cybersäkerhet, pedagogik, problembaserat lärande, ledamot i en kunds ledningsgrupp, ledamot i annan ledningsgrupp) gav v0.2: ledningens case, lärandemål med självskattning, förslag först på begäran, nya kort om säkerhet (promptinjektion, skugg-AI), utvärdering mot nuläge och styrelsens frågor med AI-förordningens krav på AI-kunnighet, separat kostnad per agentsteg, startmandat, låst länk, Intern-märkning, Rensa allt, organisationsbeskrivning i kursfilen och mått i Takten.
+- v0.9 (2026-10-16, Dans beslut): kontaktformulär i stället för e-post och telefon. Formuläret skickar inget själv; det sätter ihop ett mejl till Dans adress på mickla.se i besökarens eget e-postprogram (`kontaktMejl` i `modell.js`). Adressen sätts ihop i koden och står inte i klartext på sidan. Ingen tredjepartstjänst, eftersom CSP och principerna inte tillåter det. Om kursen eller kunder nämns inte vid namn, varken på sajten eller i repot.
+- v0.8 (2026-10-16, Dans önskemål): sidan Om kursen (`#om`, i menyn) med upplägg, bakgrund, att det är en första utgåva, om informationen, kontaktformulär och litteraturlistan. Kontaktuppgifterna och litteraturen ligger i `kurs.om`. Kursen nämner inga kunder vid namn. Ett test kontrollerar att varje källa som används i kursen finns i litteraturlistan.
+- v0.7 (2026-10-16, Dans beslut): kursen riktar sig bara till ledningsgrupper och styrelser, smalt scope är mer träffsäkert; inget talarmanus, grundbildernas punkter är självinstruerande; kursutvärdering i slutet av Leda (`svar.utvardering`), som slås ihop utan namn, syns i spelboken och kan kopieras som text till kursledaren; frågan om hur många timmar ett test får ta i startmandatet, sex timmar om den inte besvaras (`svar.generera.mandatTimmar`, `kurs.startmandatTimmar`); uppföljningspass på en timme efter cirka tre månader; Prosci-uppgiften uppdaterad till 12:e upplagan 2023 (58 procent vill höra om personliga konsekvenser från närmaste chef).
 - v0.6 (2026-10-16): mallens nedladdningslänk borttagen; grundbilden om Conways lag heter När alla kan bygga själva; övningstiderna stämmer med kursplanen; Generera-grunderna visas i pass 1 före experimentkorten; två Bedöma-kort skrivna om till konsekvensfrågor; kortet Ledningens fyra verktyg borttaget så att pass 3 ryms på två timmar. Ett test kontrollerar passens längd.
 - v0.5 (2026-10-16, Dans önskemål): innovatörens dilemma ingår i spårbundenheten; Conways lag som grundbild, gissningskort och övning i Leda.
 - v0.4 (2026-10-16, Dans önskemål): fem minuters grunder i presentationsläget före gissningarna i varje block, och spårbundenhet och innovatörens dilemma i Leda.
 - v0.3 (2026-10-16, Dans önskemål): sammanslagning av deltagarnas bidrag så att alla kan arbeta parallellt, och kursfilsverktyget för nya kunder.
 - Avfärdat i panelen: egen server för realtid (bryter principerna), poäng och prov (fel ton för en ledning), engelsk version (senare).
-- Plan B-material ligger i en lokal kursfil, aldrig i repot (2026-10-16).
+- Organisationers eget material ligger i en lokal kursfil, aldrig i repot (2026-10-16).
 - Ordningen Förstå, Bedöma, Generera, Leda (Dans beslut 2026-10-16).
 - Subdomänen heter tills vidare leda (leda.mickla.se). Byts i `publik/CNAME`, DNS och Pages-inställningarna.
 
@@ -79,7 +81,7 @@ Arbetsbeskrivning för den som utvecklar kursen vidare, människa eller Claude.
 
 - Om kursen ska finnas på engelska.
 - Om lösenfrasen ska vara obligatorisk när kursen används hos kund.
-- Om spelboken ska kunna exporteras till Word eller Excel för Plan Bs verksamhetsplan.
+- Om spelboken ska kunna exporteras till Word eller Excel för en organisations verksamhetsplan.
 
 ## Test och publicering
 

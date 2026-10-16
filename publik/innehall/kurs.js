@@ -4,7 +4,7 @@
 
 export default {
   namn: "Leda i AI-takt",
-  version: "prototyp v0.7",
+  version: "prototyp v0.9",
   upphov: "© Engströms Mickla AB 2026",
 
   start: {
@@ -13,6 +13,78 @@ export default {
     ingress: "En kort kurs för en ledning som ska leda ett kunskapsföretag när AI förändrar arbetet snabbt. Ni lär er grunderna om AI och praktiska metoder för fail fast, genom att pröva själva, inte bara lyssna.",
     lofte: "Inget ni skriver lämnar webbläsaren. Ingen AI anropas härifrån.",
     antagande: "Vi utgår från att ni kan leda ett bolag. Kursen ger er det som är nytt: vad AI är och inte är, hur ni bedömer beslut när tekniken rör sig snabbt, hur ni får fram och prövar idéer, och hur ni leder en organisation som experimenterar.",
+  },
+
+  om: {
+    rubrik: "Om kursen",
+    ingress: "Leda i AI-takt är en kort kurs för ledningsgrupper och styrelser i kunskapsföretag. Det här är en första utgåva, som prövas och förbättras efter varje kurstillfälle.",
+    delar: [
+      {
+        rubrik: "Upplägg",
+        stycken: [
+          "Kursen har fyra block: Förstå, Bedöma, Generera och Leda. Varje block följer samma varv: Lära, Pröva, Redovisa och Besluta. Lära börjar med fem minuters grunder och fortsätter med gissningar om vad det betyder för den egna organisationen. Allt som handlar om att pröva görs av deltagarna själva.",
+          "Kursen ges som en förmiddag och ett eller två kortare pass några veckor senare, med experiment i vardagen emellan och ett uppföljningspass efter cirka tre månader. Hela tiden arbetar ledningen med en verklig fråga som den själv har valt.",
+          "Det deltagarna tar med sig är Ledningens spelbok: budskap, mandat, takt, experiment och beslut, samlade i en fil som ledningen återkommer till.",
+        ],
+      },
+      {
+        rubrik: "Bakgrund",
+        stycken: [
+          "Kursen växte fram hösten 2026 ur ett förslag till AI-utbildning för en ledningsgrupp i ett konsultbolag. Utgångspunkten är att en ledning redan kan leda ett bolag. Det nya är att leda när tekniken förändras snabbare än planerna hinner göras, och när det som gjort bolaget framgångsrikt kan bli det som håller det kvar.",
+          "Därför bygger kursen på fail fast: små och billiga försök, ärlig redovisning och beslut som klassas efter hur svåra de är att ångra. Den lär ut det genom att låta ledningen pröva själv.",
+          "Kursen är också ett exempel på det den lär ut. Den är till största delen framtagen med AI, och granskad, anpassad och prövad av kursledaren i korta varv.",
+        ],
+      },
+      {
+        rubrik: "En första utgåva",
+        stycken: [
+          "Innehållet prövas på riktiga ledningsgrupper och ändras efter deras utvärderingar. Varje kurs slutar med att deltagarna utvärderar den, och synpunkterna tas tillvara i nästa version. Hör gärna av dig, särskilt om det som inte fungerade.",
+        ],
+      },
+      {
+        rubrik: "Om informationen",
+        stycken: [
+          "Inget som skrivs i kursen lämnar webbläsaren. Sajten anropar ingen AI, använder ingen statistik och sätter inga kakor. Organisationens egna regler och exempel läses in från en kursfil på kursledarens dator.",
+        ],
+      },
+    ],
+    kontakt: {
+      rubrik: "Kontakt",
+      namn: "Dan Engström",
+      roll: "Kursledare och upphovsperson",
+      text: "Frågor om kursen, synpunkter eller intresse av att genomföra den i er ledningsgrupp? Fyll i formuläret.",
+      // Adressen sätts ihop först när mejlet skapas, så att den inte står i klartext på sidan.
+      adress: ["dan", "mickla.se"],
+      amnen: ["Fråga om kursen", "Synpunkt på kursen", "Intresse av att genomföra kursen"],
+      falt: [
+        { id: "namn", namn: "Ditt namn" },
+        { id: "organisation", namn: "Organisation (valfritt)" },
+        { id: "meddelande", namn: "Meddelande" },
+      ],
+      knapp: "Skriv mejlet",
+      forklaring: "Formuläret skickar inget själv. Det öppnar ett färdigt mejl i ditt e-postprogram, som du skickar som vanligt. Inget lagras här.",
+      reserv: "Öppnades inget e-postprogram? Kopiera texten och skicka den till",
+    },
+    litteraturRubrik: "Litteratur som kursen bygger på",
+    litteratur: [
+      "Arthur, W. B. (1989). Competing technologies, increasing returns, and lock-in by historical events. The Economic Journal.",
+      "Bezos, J. (2016). Brev till Amazons aktieägare för 2015.",
+      "Christensen, C. M. (1997). The Innovator's Dilemma. Harvard Business School Press.",
+      "Christensen, C. M., Wang, D. och van Bever, D. (2013). Consulting on the Cusp of Disruption. Harvard Business Review, oktober.",
+      "Conway, M. E. (1968). How Do Committees Invent? Datamation.",
+      "David, P. A. (1985). Clio and the Economics of QWERTY. American Economic Review.",
+      "Edmondson, A. (1999). Psychological Safety and Learning Behavior in Work Teams. Administrative Science Quarterly.",
+      "Henderson, R. M. och Clark, K. B. (1990). Architectural Innovation. Administrative Science Quarterly.",
+      "MacCormack, A., Rusnak, J. och Baldwin, C. Y. (2012). Exploring the duality between product and organizational architectures. Research Policy.",
+      "March, J. G. (1991). Exploration and Exploitation in Organizational Learning. Organization Science.",
+      "O'Reilly, C. A. och Tushman, M. L. (2004). The Ambidextrous Organization. Harvard Business Review.",
+      "Prosci (2023). Best Practices in Change Management, 12:e upplagan.",
+      "Ries, E. (2011). The Lean Startup. Crown Business.",
+      "Skelton, M. och Pais, M. (2019). Team Topologies. IT Revolution.",
+      "Snowden, D. J. och Boone, M. E. (2007). A Leader's Framework for Decision Making. Harvard Business Review.",
+      "Sydow, J., Schreyögg, G. och Koch, J. (2009). Organizational Path Dependence: Opening the Black Box. Academy of Management Review.",
+      "Tripsas, M. och Gavetti, G. (2000). Capabilities, Cognition, and Inertia: Evidence from Digital Imaging. Strategic Management Journal.",
+    ],
   },
 
   // Ledningens case: en verklig fråga som går som en tråd genom alla fyra block (problembaserat lärande).

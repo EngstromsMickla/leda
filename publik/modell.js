@@ -742,3 +742,22 @@ export function siffraSomOrd(n) {
   const ord = ["noll", "en", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio", "tio", "elva", "tolv"];
   return Number.isInteger(n) && n >= 0 && n < ord.length ? ord[n] : String(n);
 }
+
+// ---------- Kontaktformuläret: ett färdigt mejl i besökarens eget e-postprogram ----------
+
+export const MAX_MEJL = 1500;
+
+export function kontaktMejl(kontakt, falt) {
+  const adress = kontakt.adress.join("@");
+  const amne = kontakt.amnen.includes(falt.amne) ? falt.amne : kontakt.amnen[0];
+  const namn = txt(falt.namn, 120).trim();
+  const org = txt(falt.organisation, 160).trim();
+  const medd = txt(falt.meddelande, MAX_MEJL).trim();
+  const kropp = [medd, "", namn ? `Hälsningar\n${namn}` : "", org].filter((x, i) => x || i === 1).join("\n").trim();
+  return {
+    adress,
+    amne: `Leda i AI-takt: ${amne}`,
+    kropp,
+    lank: `mailto:${adress}?subject=${encodeURIComponent(`Leda i AI-takt: ${amne}`)}&body=${encodeURIComponent(kropp)}`,
+  };
+}

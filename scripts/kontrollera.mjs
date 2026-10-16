@@ -27,6 +27,8 @@ gaIgenom(rot, (fil) => {
   if (/\beval\(|new Function\(/.test(text)) fel.push(`${kort}: eval eller new Function`);
   if (/localStorage/.test(text)) fel.push(`${kort}: localStorage används (bara sessionStorage är tillåtet)`);
   if (/[–—]/.test(text)) fel.push(`${kort}: tankstreck i texten`);
+  if (/Plan B|planbab/i.test(text)) fel.push(`${kort}: kundnamn i publik kod (kursen nämner inga kunder)`);
+  if (/[a-z0-9._-]+@mickla\.se/i.test(text)) fel.push(`${kort}: e-postadress i klartext`);
   if (/style="/.test(text) && !/modell\.js$/.test(fil)) fel.push(`${kort}: style-attribut (blockeras av CSP)`);
 });
 
@@ -50,5 +52,8 @@ for (const f of ["img/mickla.png", "exempel/Exempel_kursfil.json", "CNAME", "inn
 }
 for (const f of fs.readdirSync(path.join(rot, "exempel"))) if (!/^Exempel_/.test(f)) fel.push(`publik/exempel/${f}: bara påhittade exempelfiler får ligga i repot`);
 
+for (const f of ["CLAUDE.md", "README.md"]) {
+  if (fs.existsSync(path.join(repo, f)) && /Plan B|planbab/i.test(fs.readFileSync(path.join(repo, f), "utf8"))) fel.push(`${f}: kundnamn i det publika repot`);
+}
 if (fel.length) { console.error("Kontrollen hittade problem:\n" + fel.map((f) => " - " + f).join("\n")); process.exit(1); }
 console.log("Kontrollen gick igenom.");
