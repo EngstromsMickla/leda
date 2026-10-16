@@ -468,3 +468,12 @@ fieldset.plain { border: 0; padding: 0; margin: 10px 0 6px; min-width: 0; }
 .pres-kalla { margin-top: 18px; }
 .pres-prickar i.g { border-radius: 2px; }
 @media (max-width: 680px) { .grunderna { scroll-margin-top: 12px; } }
+
+/* Startmandat och kursutvärdering (v0.7) */
+.startmandat { display: grid; gap: 8px; }
+.startmandat .timmar { margin: 0; }
+.startmandat .timmar input { max-width: 120px; }
+.startmandat button { justify-self: start; }
+.utv-falt { margin-top: 14px; }
+#utvardering { scroll-margin-top: 110px; }
+@media (max-width: 680px) { #utvardering { scroll-margin-top: 12px; } }

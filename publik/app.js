@@ -487,18 +487,59 @@ function vBlock(b) {
 
     h("section", { class: "fas-sektion", id: "besluta" },
       h("h2", { text: "Besluta" }), p(b.besluta, "hjalp"),
-      b.id === "generera" && !S.beslut.some((x) => x.text === kurs.startmandat) ? h("div", { class: "note strong" },
-        h("b", { text: "Förslag på startmandat. " }), kurs.startmandat, " ",
-        knapp("Lägg in som beslut", () => {
-          S.beslut.push({ id: M.nyttId("b"), block: "generera", text: kurs.startmandat, klass: "hatt", ansvarig: S.meta.grupp || "Ledningsgruppen", datum: M.idag() });
-          andrat(true); omrita();
-        }, "ghost liten-knapp", { "data-fokus": "startmandat" })) : null,
+      b.id === "generera" && !S.beslut.some((x) => x.text.startsWith(kurs.startmandatInledning)) ? vStartmandat() : null,
       beslutslogg(b.id)),
+    b.id === "leda" ? vUtvardering() : null,
 
     h("div", { class: "navrow" },
       forra ? h("a", { class: "btn ghost", href: `#${forra.id}` }, `Tillbaka till ${forra.namn}`) : h("a", { class: "btn ghost", href: "#start" }, "Till start"),
       nasta ? h("a", { class: "btn", href: `#${nasta.id}` }, `Vidare till ${nasta.namn}`) : h("a", { class: "btn", href: "#spelbok" }, "Till spelboken")),
   ];
+}
+
+function startmandatText() {
+  const t = S.svar.generera.mandatTimmar;
+  const n = t === "" ? kurs.startmandatTimmar : t;
+  return kurs.startmandat.replace("{timmar}", n === 1 ? "en timme" : `${M.siffraSomOrd(n)} timmar`);
+}
+
+function vStartmandat() {
+  const tim = h("input", { type: "number", min: 1, max: 100, step: 1, value: S.svar.generera.mandatTimmar, placeholder: String(kurs.startmandatTimmar), "data-fokus": "startmandat-timmar" });
+  const forslag = p(startmandatText(), "tight");
+  tim.addEventListener("input", () => {
+    const n = Number(tim.value);
+    S.svar.generera.mandatTimmar = tim.value === "" || !Number.isFinite(n) ? "" : Math.max(1, Math.min(100, Math.round(n)));
+    forslag.textContent = startmandatText();
+    andrat();
+  });
+  return h("div", { class: "note strong startmandat" },
+    h("b", { text: "Startmandat för testerna fram till nästa pass" }),
+    h("label", { class: "falt-rad timmar" }, h("span", { text: "Hur många timmar får ett test ta? Lämnas fältet tomt gäller sex timmar." }), tim),
+    forslag,
+    knapp("Lägg in som beslut", () => {
+      S.beslut.push({ id: M.nyttId("b"), block: "generera", text: startmandatText(), klass: "hatt", ansvarig: S.meta.grupp || "Ledningsgruppen", datum: M.idag() });
+      andrat(true); omrita();
+    }, "ghost liten-knapp", { "data-fokus": "startmandat" }));
+}
+
+function vUtvardering() {
+  const t = kurs.utvardering;
+  const uv = S.svar.utvardering;
+  return h("section", { class: "fas-sektion", id: "utvardering" },
+    h("h2", { text: t.rubrik }),
+    p(t.text, "hjalp"),
+    h("div", { class: "card" },
+      h("p", { class: "tight", text: t.nytta.fraga }),
+      valrad("nytta", t.nytta.val, uv.nytta, (v) => { uv.nytta = v; andrat(); omrita(); }, { aria: t.nytta.fraga }),
+      uv.nyttor.length ? p(`Från deltagarnas bidrag: ${t.nytta.val.map(([v, namn]) => { const n = uv.nyttor.filter((x) => x === v).length; return n ? `${namn.toLowerCase()} ${n}` : ""; }).filter(Boolean).join(", ")}.`, "hjalp small") : null,
+      h("div", { class: "utv-falt" }, t.falt.map((f) => falt(f.namn, uv[f.id], (v) => { uv[f.id] = v; }, { rader: 3, fokus: `utv-${f.id}` }))),
+      h("div", { class: "actions" },
+        knapp("Kopiera utvärderingen", (e) => {
+          const text = M.utvarderingText(S);
+          if (!text) { flash("Utvärderingen är tom än så länge.", true); return; }
+          kopiera(`Utvärdering av ${kurs.namn}, ${K().organisation}, ${M.idag()}\n\n${text}`, e.currentTarget);
+        }, "ghost", { "data-fokus": "kopiera-utvardering" }),
+        p("Klistra in den i ett mejl till kursledaren, eller låt den ligga kvar i spelboken.", "hjalp small tight"))));
 }
 
 function vRedovisa(b) {
@@ -1006,6 +1047,7 @@ function vSpelbok() {
     ["Ledningens case", [s.fall.fraga, ...M.BLOCK.map((b) => s[b].fall)].filter(Boolean).length, null, "start/fall", "av fem: frågan och svaren i de fyra blocken"],
     ["Självskattning", M.BLOCK.reduce((n, b) => n + Object.keys(s[b].mal).length, 0), null, "leda/fall-tillbaka", "av tolv lärandemål skattade"],
     ["Våra spår", [s.leda.spar.framgang, s.leda.spar.laser, s.leda.spar.bryta].filter(Boolean).length, null, "leda/ov-spar", "av tre fält ifyllda"],
+    ["Utvärdering av kursen", [S.svar.utvardering.nytta, S.svar.utvardering.basta, S.svar.utvardering.andra, S.svar.utvardering.saknas].filter(Boolean).length, null, "leda/utvardering", "av fyra svar ifyllda"],
     ["Det vi bygger själva", [s.leda.bygga.gemensamt, s.leda.bygga.fritt, s.leda.bygga.synligt].filter(Boolean).length, null, "leda/ov-bygga", "av tre fält ifyllda"],
     ["Budskapet", [bu.varfor, bu.experiment, bu.misslyckat].filter(Boolean).length, 3, "leda/ov-budskap", "av tre svar skrivna"],
     ["Mandatet", ma.fritt.length + ma.fraga.length + ma.ledning.length, null, "leda/ov-mandat", "rader"],
@@ -1066,10 +1108,9 @@ function vGuide() {
     h("ul", { class: "lista-steg" }, g.data.map((d) => h("li", { text: d }))),
     h("h2", { text: "Kursfilen" }),
     p("Kursfilen är det som gör kursen till en organisations egen: beskrivning, förslag på case, spelregler, beslutsnivåer, beslutskort, uppgifter och startvärden för kostnadsövningen. Kursledaren läser in den en gång, på datorn vid storskärmen; därefter följer innehållet med i spelboken och länken. Deltagarna behöver aldrig hantera den."),
-    p("En ny kursfil görs i kursfilsverktyget: AI tar fram ett utkast ur organisationens egna dokument, och du granskar och laddar ner. Den som vill kan också ladda ner mallen och skriva filen för hand.", "hjalp"),
+    p("En ny kursfil görs i kursfilsverktyget: AI tar fram ett utkast ur organisationens egna dokument, och du granskar och laddar ner.", "hjalp"),
     h("div", { class: "actions" },
-      h("a", { class: "btn", href: "#kursfil" }, "Öppna kursfilsverktyget"),
-      h("a", { class: "btn ghost", href: "exempel/Exempel_kursfil.json", download: "Mall_kursfil.json" }, "Ladda ner mallen")),
+      h("a", { class: "btn", href: "#kursfil" }, "Öppna kursfilsverktyget")),
   ];
 }
 
@@ -1257,7 +1298,7 @@ function vKursfil() {
     ...rubrikrad("För kursledaren", t.rubrik, t.ingress),
     h("ol", { class: "varv kf-steg" }, t.steg.map(([namn, text]) => h("li", {}, h("div", {}, h("b", { text: namn }), h("span", { text })))))];
   const borjaRad = h("div", { class: "actions" },
-    knapp("Börja från mallen", () => borja("mall"), utkast ? "ghost" : "", { "data-fokus": "kf-mall" }),
+    knapp("Börja från exemplet", () => borja("mall"), utkast ? "ghost" : "", { "data-fokus": "kf-mall" }),
     knapp("Öppna en kursfil", () => borja("fil"), "ghost"),
     knapp("Utgå från kursen som används nu", () => borja("nu"), "ghost"),
     utkast ? knapp("Börja om med tom fil", () => borja("tom"), "lank-knapp") : null);
@@ -1278,7 +1319,7 @@ function vKursfil() {
     }
   };
   const promptText = kurs.kursfilverktyg.prompt.replace("{organisation}", k.organisation && k.organisation !== "Ny organisation" ? k.organisation : "organisationen")
-    .replace("{struktur}", exempelText || "(mallen kunde inte hämtas; ladda ner den från Så går det till)");
+    .replace("{struktur}", exempelText || "(exemplet kunde inte hämtas; ladda om sidan och försök igen)");
   if (!exempelText) hamtaExempel().then(() => { if (rutt().vy === "kursfil") omrita(); });
 
   const anvand = () => {

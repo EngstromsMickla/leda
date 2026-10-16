@@ -261,7 +261,7 @@ test("varje block har grunder före gissningarna, och Leda har spårbundenhet", 
   const leda = kurs.block.find((b) => b.id === "leda");
   assert.ok(leda.grund.some((g) => /Spårbundenhet/.test(g.rubrik) && /Sydow/.test(g.kalla)));
   assert.ok(leda.grund.some((g) => /Spårbundenhet/.test(g.rubrik) && /Christensen/.test(g.kalla)));
-  assert.ok(leda.grund.some((g) => /Conways lag/.test(g.rubrik) && /Conway/.test(g.kalla)));
+  assert.ok(leda.grund.some((g) => g.punkter.some((x) => /Conways lag/.test(x)) && /Conway/.test(g.kalla)));
   assert.ok(leda.lara.some((k) => k.id === "conway"));
   assert.deepEqual(leda.prova.slice(0, 2), ["spar", "bygga"]);
   assert.ok(leda.lara.some((k) => k.id === "polaroid"));
@@ -291,4 +291,45 @@ test("det vi bygger själva sparas, slås ihop och syns i spelboken", () => {
   const { S: ihop } = M.slaIhop(T, B, "Bertil");
   assert.equal(ihop.svar.leda.bygga.synligt, "Register hos IT\n\nBertil: Arbetsbeskrivning i varje verktyg");
   assert.match(M.spelbokHtml(ihop, kurs, {}), /Det vi bygger själva/);
+});
+
+test("kursplanen håller tiden", () => {
+  const minuter = (ps) => ps.delar.reduce((n, [t]) => n + (parseInt(t, 10) || 0), 0);
+  const pass = Object.fromEntries(kurs.pass.map((ps) => [ps.id, ps]));
+  assert.ok(minuter(pass.p1) <= 215, `pass 1: ${minuter(pass.p1)} min`);
+  assert.ok(minuter(pass.p2) <= 120, `pass 2: ${minuter(pass.p2)} min`);
+  assert.ok(minuter(pass.p3) <= 120, `pass 3: ${minuter(pass.p3)} min`);
+});
+
+test("kursutvärderingen slås ihop utan namn och kan kopieras som text", () => {
+  const A = fylltTillstand();
+  A.svar.utvardering = { basta: "Gissningarna", andra: "", saknas: "", nytta: "ganska", nyttor: [] };
+  const B = M.lasTillstand(M.sparbart(A));
+  B.svar.utvardering = { basta: "Promptlabbet", andra: "Kortare grunder", saknas: "", nytta: "mycket", nyttor: [] };
+  const { S } = M.slaIhop(M.lasTillstand(M.sparbart(A)), B, "Anna");
+  assert.equal(S.svar.utvardering.basta, "Gissningarna\n\nPromptlabbet");
+  assert.ok(!S.svar.utvardering.basta.includes("Anna"), "utvärderingen är anonym");
+  assert.deepEqual(S.svar.utvardering.nyttor, ["mycket"]);
+  const text = M.utvarderingText(S);
+  assert.match(text, /Gruppen: ganska/);
+  assert.match(text, /Enskilda svar: mycket 1/);
+  assert.match(M.spelbokHtml(S, kurs, {}), /Utvärdering av kursen/);
+  const ond = M.sparbart(A);
+  ond.svar.utvardering.nytta = "superbra";
+  ond.svar.utvardering.nyttor = ["mycket", "fel"];
+  ond.svar.generera.mandatTimmar = 500;
+  const T = M.lasTillstand(ond);
+  assert.equal(T.svar.utvardering.nytta, "");
+  assert.deepEqual(T.svar.utvardering.nyttor, ["mycket"]);
+  assert.equal(T.svar.generera.mandatTimmar, 100);
+});
+
+test("startmandatet har sex timmar som standard, uppföljningen ryms på en timme", () => {
+  assert.equal(kurs.startmandatTimmar, 6);
+  assert.match(kurs.startmandat, /\{timmar\}/);
+  assert.equal(M.siffraSomOrd(6), "sex");
+  const upp = kurs.pass.find((ps) => ps.id === "uppfoljning");
+  assert.ok(upp && upp.delar.reduce((n, [t]) => n + parseInt(t, 10), 0) <= 60);
+  const leda = kurs.block.find((b) => b.id === "leda");
+  assert.ok(leda.lara.some((k) => /2023/.test(k.kalla || "") && /58 procent/.test(k.svar.join(" "))));
 });

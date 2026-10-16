@@ -12,6 +12,7 @@ export const STATUS = ["planerat", "pagar", "lyckat", "misslyckat", "stoppat"];
 export const EXPBESLUT = ["", "anta", "justera", "stoppa"];
 export const KOSTNADSFALT = ["anvandare", "fragor", "perFraga", "dagar", "licens", "agentUppgifter", "agentSteg", "agentPerSteg"];
 export const SJALV = ["ja", "delvis", "nej"];
+export const NYTTA = ["mycket", "ganska", "lite", "inte"];
 
 const MAX = { kort: 160, mellan: 600, lang: 3000 };
 
@@ -86,9 +87,10 @@ export function kostnadsvarden(k = {}) {
 export function nyttSvar() {
   return {
     fall: { fraga: "", varfor: "", kunna: "" },
+    utvardering: { basta: "", andra: "", saknas: "", nytta: "", nyttor: [] },
     forsta: { f1: { skillnad: "", tal: "" }, uppgifter: {}, kommentar: {}, kostnad: null, redovisa: { overraskade: "", veta: "" }, fall: "", mal: {} },
     bedoma: { guide: { titel: "", svar: {} }, placering: { idag: {}, billigt: {}, last: {} }, egnaKort: [], redovisa: { oense: "" }, fall: "", mal: {} },
-    generera: { prompter: {}, ideer: [], experiment: [], redovisa: {}, fall: "", mal: {} },
+    generera: { prompter: {}, ideer: [], experiment: [], redovisa: {}, fall: "", mal: {}, mandatTimmar: "" },
     leda: {
       spar: { framgang: "", laser: "", bryta: "" },
       bygga: { gemensamt: "", fritt: "", synligt: "" },
@@ -134,6 +136,14 @@ export function lasTillstand(indata) {
     S.svar[b].fall = txt(bl.fall, MAX.lang);
     for (const [i, v] of Object.entries(obj(bl.mal))) if (/^[0-9]$/.test(i) && SJALV.includes(v)) S.svar[b].mal[i] = v;
   }
+
+  const ut = obj(s.utvardering);
+  S.svar.utvardering = {
+    basta: txt(ut.basta, MAX.lang), andra: txt(ut.andra, MAX.lang), saknas: txt(ut.saknas, MAX.lang),
+    nytta: ett(ut.nytta, NYTTA), nyttor: arr(ut.nyttor, 60).filter((v) => NYTTA.includes(v)),
+  };
+  const mt = obj(s.generera).mandatTimmar;
+  S.svar.generera.mandatTimmar = mt === "" || mt === undefined || mt === null ? "" : tal(mt, 1, 100, "");
 
   const f = obj(s.forsta);
   S.svar.forsta.f1 = { skillnad: txt(obj(f.f1).skillnad, MAX.lang), tal: txt(obj(f.f1).tal, MAX.lang) };
@@ -449,6 +459,11 @@ export function spelbokHtml(S, kurs, { origin = "", lank = "", lankTyp = "data",
   const fallet = fa.fraga || fa.varfor || fa.kunna || blockFall || malRader
     ? `${fa.fraga ? `<p class="fall">${esc(fa.fraga)}</p>` : ""}${fa.varfor ? `<h3>Varför den är viktig nu</h3>${stycken(fa.varfor)}` : ""}${fa.kunna ? `<h3>Det här ville vi kunna efter kursen</h3>${stycken(fa.kunna)}` : ""}${blockFall ? `<h3 class="mellanrubrik">Så besvarade blocken vår fråga</h3>${blockFall}` : ""}${malRader ? `<h3 class="mellanrubrik">Självskattning mot lärandemålen</h3>${malRader}` : ""}`
     : tom("Ledningens case är inte formulerat ännu.");
+  const uv = sv.utvardering;
+  const NY = { mycket: "Mycket", ganska: "Ganska", lite: "Lite", inte: "Inte alls" };
+  const utvardering = utvarderingText(S) ? `${uv.nytta || uv.nyttor.length ? `<p><b>Hur användbar var kursen?</b> ${esc([uv.nytta ? `gruppen: ${NY[uv.nytta].toLowerCase()}` : "", ...NYTTA.map((v) => { const n = uv.nyttor.filter((x) => x === v).length; return n ? `${NY[v].toLowerCase()}: ${n}` : ""; })].filter(Boolean).join(", "))}</p>` : ""}${
+    [["Det som fungerade bäst", uv.basta], ["Det vi skulle ändra eller ta bort", uv.andra], ["Det som saknades", uv.saknas]].filter(([, v]) => v).map(([k, v]) => `<h3>${esc(k)}</h3>${stycken(v)}`).join("")}`
+    : tom("Kursen är inte utvärderad ännu.");
   const deltagare = S.meta.deltagare.length ? ` · ${esc(S.meta.deltagare.join(", "))}` : "";
 
   return `<!doctype html>
@@ -491,7 +506,7 @@ footer img{width:22px;height:22px;opacity:.72;image-rendering:pixelated}
 ${origin ? `<div class="fortsatt">${lank ? `<a href="${esc(`${origin}/#${typ}=${lank}&till=spelbok`)}">Öppna kursen med allt vi har gjort</a><br><span>${typ === "las"
     ? "Länken är låst med en lösenfras som inte finns i den här filen. Den skickas inte till någon server."
     : "Länken bär innehållet själv och skickas inte till någon server, men den som har länken kan läsa innehållet. Dela den bara med dem som får läsa spelboken."}</span>` : `Läs in den här filen på <a href="${esc(origin)}/">${esc(origin.replace(/^https?:\/\//, ""))}</a> för att arbeta vidare.`}</div>` : ""}
-<nav class="inneh" aria-label="Innehåll"><a href="#fall">Vårt case</a><a href="#spar">Spår</a><a href="#bygga">Bygga själva</a><a href="#budskap">Budskap</a><a href="#mandat">Mandat</a><a href="#takt">Takt</a><a href="#experiment">Experiment</a><a href="#beslut">Beslut</a><a href="#klassning">Klassning</a><a href="#karta">Försök och drift</a><a href="#ideer">Idéer</a><a href="#forsta">Det vi lärde oss</a><a href="#spelregler">Spelregler</a></nav>
+<nav class="inneh" aria-label="Innehåll"><a href="#fall">Vårt case</a><a href="#spar">Spår</a><a href="#bygga">Bygga själva</a><a href="#budskap">Budskap</a><a href="#mandat">Mandat</a><a href="#takt">Takt</a><a href="#experiment">Experiment</a><a href="#beslut">Beslut</a><a href="#klassning">Klassning</a><a href="#karta">Försök och drift</a><a href="#ideer">Idéer</a><a href="#forsta">Det vi lärde oss</a><a href="#spelregler">Spelregler</a><a href="#utvardering">Utvärdering</a></nav>
 ${sek("fall", "Ledningens case", fallet, "start/fall")}
 ${sek("spar", "Våra spår", spar, "leda/ov-spar")}
 ${sek("bygga", "Det vi bygger själva", bygga, "leda/ov-bygga")}
@@ -505,6 +520,7 @@ ${sek("karta", "Från försök till drift", karta, "leda/ov-karta")}
 ${sek("ideer", "Idéer i flödet", ideer, "generera/ov-ideer")}
 ${sek("forsta", "Det vi lärde oss", forsta, "forsta/redovisa")}
 ${sek("spelregler", "Våra spelregler", regler, "")}
+${sek("utvardering", "Utvärdering av kursen", utvardering, "leda/utvardering")}
 </main>
 <footer>${logga ? `<img src="${esc(logga)}" alt="Mickla">` : ""}<span>${esc(kurs.upphov)}</span><span>${esc(kurs.namn)} · ${esc(kurs.version)}</span></footer>
 <script type="application/json" id="leda-data">${data}</script>
@@ -570,6 +586,13 @@ export function slaIhop(Sa, Sb, av = "") {
   if (!a.bedoma.guide.titel && b.bedoma.guide.titel) a.bedoma.guide = b.bedoma.guide;
 
   for (const [id, v] of Object.entries(b.generera.prompter)) text(a.generera.prompter, id, v);
+  if (a.generera.mandatTimmar === "" && b.generera.mandatTimmar !== "") a.generera.mandatTimmar = b.generera.mandatTimmar;
+  // Utvärderingen slås ihop utan namn, så att den kan vara ärlig.
+  for (const k of ["basta", "andra", "saknas"]) {
+    const ny = slaIhopText(a.utvardering[k], b.utvardering[k], "");
+    if (ny !== a.utvardering[k]) { a.utvardering[k] = ny; r.texter += 1; }
+  }
+  if (b.utvardering.nytta && b.utvardering.nytta !== a.utvardering.nytta) a.utvardering.nyttor = [...a.utvardering.nyttor, b.utvardering.nytta].slice(0, 60);
   const ideId = new Set(a.generera.ideer.map((i) => i.id));
   for (const i of b.generera.ideer) if (!ideId.has(i.id)) { a.generera.ideer.push(i); ideId.add(i.id); r.ideer += 1; }
   const expMap = new Map(a.generera.experiment.map((e) => [e.id, e]));
@@ -701,4 +724,21 @@ export function kursfilVarningar(k) {
   const ts = tankstreckIKursfil(m);
   if (ts) v.push(`Tankstreck på ${ts} ställen.`);
   return v;
+}
+
+// ---------- Kursutvärderingen som text, att skicka till kursledaren ----------
+
+export function utvarderingText(S) {
+  const uv = S.svar.utvardering;
+  const NY = { mycket: "mycket", ganska: "ganska", lite: "lite", inte: "inte alls" };
+  const rader = [];
+  if (uv.nytta) rader.push(`Hur användbar var kursen? Gruppen: ${NY[uv.nytta]}.`);
+  if (uv.nyttor.length) rader.push(`Enskilda svar: ${NYTTA.map((v) => { const n = uv.nyttor.filter((x) => x === v).length; return n ? `${NY[v]} ${n}` : ""; }).filter(Boolean).join(", ")}.`);
+  for (const [k, v] of [["Det som fungerade bäst", uv.basta], ["Det vi skulle ändra eller ta bort", uv.andra], ["Det som saknades", uv.saknas]]) if (v.trim()) rader.push(`${k}:\n${v.trim()}`);
+  return rader.join("\n\n");
+}
+
+export function siffraSomOrd(n) {
+  const ord = ["noll", "en", "två", "tre", "fyra", "fem", "sex", "sju", "åtta", "nio", "tio", "elva", "tolv"];
+  return Number.isInteger(n) && n >= 0 && n < ord.length ? ord[n] : String(n);
 }
