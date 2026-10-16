@@ -1,0 +1,4 @@
+node_modules/
+*_kursfil.json
+!publik/exempel/Exempel_kursfil.json
+Spelbok_*.html
