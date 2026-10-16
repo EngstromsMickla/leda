@@ -260,9 +260,11 @@ test("varje block har grunder före gissningarna, och Leda har spårbundenhet", 
   }
   const leda = kurs.block.find((b) => b.id === "leda");
   assert.ok(leda.grund.some((g) => /Spårbundenhet/.test(g.rubrik) && /Sydow/.test(g.kalla)));
-  assert.ok(leda.grund.some((g) => /Innovatörens dilemma/.test(g.rubrik) && /Christensen/.test(g.kalla)));
+  assert.ok(leda.grund.some((g) => /Spårbundenhet/.test(g.rubrik) && /Christensen/.test(g.kalla)));
+  assert.ok(leda.grund.some((g) => /Conways lag/.test(g.rubrik) && /Conway/.test(g.kalla)));
+  assert.ok(leda.lara.some((k) => k.id === "conway"));
+  assert.deepEqual(leda.prova.slice(0, 2), ["spar", "bygga"]);
   assert.ok(leda.lara.some((k) => k.id === "polaroid"));
-  assert.equal(leda.prova[0], "spar");
 });
 
 test("våra spår sparas, slås ihop och syns i spelboken", () => {
@@ -277,4 +279,16 @@ test("våra spår sparas, slås ihop och syns i spelboken", () => {
   const html = M.spelbokHtml(ihop, kurs, {});
   assert.match(html, /Våra spår/);
   assert.match(html, /Pröva fast pris/);
+});
+
+test("det vi bygger själva sparas, slås ihop och syns i spelboken", () => {
+  const S = fylltTillstand();
+  S.svar.leda.bygga = { gemensamt: "Kunddata\nBegrepp", fritt: "Egna kalkylverktyg", synligt: "Register hos IT" };
+  const T = M.lasTillstand(M.sparbart(S));
+  assert.deepEqual(T.svar.leda.bygga, S.svar.leda.bygga);
+  const B = M.lasTillstand(M.sparbart(S));
+  B.svar.leda.bygga.synligt = "Arbetsbeskrivning i varje verktyg";
+  const { S: ihop } = M.slaIhop(T, B, "Bertil");
+  assert.equal(ihop.svar.leda.bygga.synligt, "Register hos IT\n\nBertil: Arbetsbeskrivning i varje verktyg");
+  assert.match(M.spelbokHtml(ihop, kurs, {}), /Det vi bygger själva/);
 });

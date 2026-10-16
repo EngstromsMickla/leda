@@ -818,6 +818,27 @@ const OVNINGAR = {
         }, "ghost", { "data-fokus": "spar-experiment" })));
   },
 
+  bygga: () => {
+    const ov = kurs.ovningar.bygga;
+    const by = S.svar.leda.bygga;
+    const rader = (t) => t.split(/\n+/).map((x) => x.replace(/^[\s*•-]+/, "").trim()).filter(Boolean);
+    return ovningskort("bygga",
+      ov.falt.map((f) => falt(f.namn, by[f.id], (v) => { by[f.id] = v; }, { rader: 3, max: 3000, platshallare: f.platshallare || "", fokus: `bygga-${f.id}` })),
+      h("div", { class: "actions" },
+        knapp("Lägg in raderna i mandatet", () => {
+          const ma = S.svar.leda.mandat;
+          let n = 0;
+          for (const [kol, falt] of [["ledning", "gemensamt"], ["fritt", "fritt"]]) {
+            const finns = new Set(ma[kol].map((x) => x.trim().toLowerCase()));
+            for (const r of rader(by[falt])) if (!finns.has(r.toLowerCase()) && ma[kol].length < 30) { ma[kol].push(r.slice(0, 600)); finns.add(r.toLowerCase()); n += 1; }
+          }
+          andrat(true);
+          omrita();
+          flash(n ? `${n} rader ligger nu i mandatet nedan.` : "Inga nya rader att lägga in.");
+        }, "ghost", { "data-fokus": "bygga-mandat" })),
+      p("Det gemensamma hamnar under Ledningen beslutar och det fria under Får prövas utan att fråga.", "hjalp small"));
+  },
+
   budskap: () => {
     const ov = kurs.ovningar.budskap;
     const bu = S.svar.leda.budskap;
@@ -985,6 +1006,7 @@ function vSpelbok() {
     ["Ledningens case", [s.fall.fraga, ...M.BLOCK.map((b) => s[b].fall)].filter(Boolean).length, null, "start/fall", "av fem: frågan och svaren i de fyra blocken"],
     ["Självskattning", M.BLOCK.reduce((n, b) => n + Object.keys(s[b].mal).length, 0), null, "leda/fall-tillbaka", "av tolv lärandemål skattade"],
     ["Våra spår", [s.leda.spar.framgang, s.leda.spar.laser, s.leda.spar.bryta].filter(Boolean).length, null, "leda/ov-spar", "av tre fält ifyllda"],
+    ["Det vi bygger själva", [s.leda.bygga.gemensamt, s.leda.bygga.fritt, s.leda.bygga.synligt].filter(Boolean).length, null, "leda/ov-bygga", "av tre fält ifyllda"],
     ["Budskapet", [bu.varfor, bu.experiment, bu.misslyckat].filter(Boolean).length, 3, "leda/ov-budskap", "av tre svar skrivna"],
     ["Mandatet", ma.fritt.length + ma.fraga.length + ma.ledning.length, null, "leda/ov-mandat", "rader"],
     ["Takten", [ta.prova, ta.redovisa, ta.besluta, ta.matt, ta.nasta].filter(Boolean).length, 5, "leda/ov-takt", "av fem ifyllda"],

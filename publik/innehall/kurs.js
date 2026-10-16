@@ -4,7 +4,7 @@
 
 export default {
   namn: "Leda i AI-takt",
-  version: "prototyp v0.4",
+  version: "prototyp v0.5",
   upphov: "© Engströms Mickla AB 2026",
 
   start: {
@@ -500,21 +500,21 @@ export default {
           rubrik: "Spårbundenhet",
           punkter: [
             "Det som gjorde oss framgångsrika förstärker sig självt. Rutiner, kunskaper, kundrelationer, system och prismodell passar allt bättre ihop och blir svårare att ändra för varje år.",
-            "Tre faser: först finns många möjliga vägar, sedan smalnar självförstärkande mekanismer av valen, till sist är organisationen inlåst.",
-            "Mekanismerna: delar som samordnas och kompletterar varandra, lärande som gör oss bättre på det vi redan gör, och förväntningar om att allt fortsätter som förut.",
-            "Att bryta ett spår kräver avsiktliga ingrepp. Det sker sällan av sig självt.",
+            "Först finns många möjliga vägar, sedan smalnar självförstärkande mekanismer av valen, till sist är organisationen inlåst.",
+            "Innovatörens dilemma är spårbundenhet i marknaden: välskötta bolag blir omsprungna för att de lyssnar på sina bästa kunder, medan ny teknik börjar sämre och billigare hos dem de inte bryr sig om.",
+            "Att bryta ett spår kräver avsiktliga ingrepp, ofta en egen enhet med egna mål och mått.",
           ],
-          kalla: "Sydow, Schreyögg och Koch, Organizational Path Dependence: Opening the Black Box, Academy of Management Review, 2009. Se även David, 1985, och Arthur, 1989.",
+          kalla: "Sydow, Schreyögg och Koch, Organizational Path Dependence: Opening the Black Box, Academy of Management Review, 2009. Christensen, The Innovator's Dilemma, 1997.",
         },
         {
-          rubrik: "Innovatörens dilemma",
+          rubrik: "Conways lag",
           punkter: [
-            "Välskötta bolag blir omsprungna just för att de gör rätt: lyssnar på sina bästa kunder och satsar där marginalen är högst.",
-            "Ny teknik börjar ofta sämre men billigare, för kunder som de etablerade inte bryr sig om. Sedan blir den tillräckligt bra för allt fler.",
-            "Christensens svar är en egen enhet med egna mål, mått och kostnader, skyddad från det befintliga.",
-            "Han tillämpade senare resonemanget på konsultbranschen: analys som juniora konsulter gör kan bli billig och standardiserad. Hur väl det har slagit in är omdiskuterat, men AI gör frågan skarpare.",
+            "Organisationer som utformar system tar fram konstruktioner som är kopior av organisationens kommunikationsstruktur. Tre avdelningar ger tre delar.",
+            "När alla kan bygga med AI blir verktygen kopior av organisationens silos: många små lösningar med egna data och egna begrepp, som inte hänger ihop.",
+            "När bygget blir billigt blir samordningen det dyra. Data, begrepp och ansvar är ledningens fråga.",
+            "Vänd på lagen: bestäm först det som ska vara gemensamt, och låt sedan var och en bygga fritt inom ramen.",
           ],
-          kalla: "Christensen, The Innovator's Dilemma, 1997. Christensen, Wang och van Bever, Consulting on the Cusp of Disruption, Harvard Business Review, oktober 2013.",
+          kalla: "Conway, How Do Committees Invent?, Datamation, 1968. MacCormack, Rusnak och Baldwin, Research Policy, 2012. Skelton och Pais, Team Topologies, 2019.",
         },
       ],
       lara: [
@@ -557,9 +557,21 @@ export default {
           svar: [
             "Oftast de minst krävande, de ni själva tjänar minst på. Därför är det lätt att låta dem gå, och just så börjar det enligt Christensen.",
             "Frågan för ledningen är inte om den billigare varianten är sämre, utan när den blir tillräckligt bra för allt fler.",
+            "Christensen, Wang och van Bever tillämpade resonemanget på konsultbranschen: analys som juniora konsulter gör kan bli billig och standardiserad. Hur väl det har slagit in är omdiskuterat, men AI gör frågan skarpare.",
           ],
           ledning: "Ska vi själva bygga den billigare varianten, innan någon annan gör det?",
-          kalla: "Christensen, 1997.",
+          kalla: "Christensen, 1997. Christensen, Wang och van Bever, Consulting on the Cusp of Disruption, Harvard Business Review, oktober 2013.",
+        },
+        {
+          id: "conway",
+          rubrik: "Om alla bygger själva",
+          gissa: "Tänk er att alla avdelningar hos er bygger egna AI-verktyg i ett år. Hur ser verktygslandskapet ut då?",
+          svar: [
+            "Som organisationsschemat. Varje avdelning får verktyg som passar dess eget arbete, med egna data och egna begrepp, och de pratar inte med varandra. Kunskapen om hur de fungerar bor hos den som byggde dem.",
+            "Henderson och Clark visade att det värdefulla ofta sitter i hur delarna hänger ihop, och att just den kunskapen är svårast för en organisation att ändra. För ett bolag inom informationshantering är skarvarna kärnkompetens.",
+          ],
+          ledning: "Vem hos oss ansvarar för skarvarna när alla bygger själva?",
+          kalla: "Henderson och Clark, Architectural Innovation, Administrative Science Quarterly, 1990.",
         },
         {
           id: "ambidex",
@@ -593,7 +605,7 @@ export default {
           ledning: "Vilka av de fem frågorna kan vi besvara för styrelsen i dag?",
         },
       ],
-      prova: ["spar", "budskap", "mandat", "takt", "karta"],
+      prova: ["spar", "bygga", "budskap", "mandat", "takt", "karta"],
       redovisa: {
         rubrik: "Vad säger vi på måndag?",
         text: "Skriv vad ledningen säger till organisationen efter kursen, och vem som säger det.",
@@ -756,6 +768,18 @@ export default {
         { id: "bryta", namn: "Det vi kan pröva för att bryta spåret" },
       ],
     },
+    bygga: {
+      rubrik: "Det vi bygger själva",
+      tid: "15 min",
+      vem: "Hela ledningen resonerar, någon skriver",
+      info: "Conways lag, vänd åt rätt håll",
+      text: "Bestäm först vad som ska vara gemensamt; det är tatueringar. Resten får var och en bygga fritt, men det ska synas vad som finns och vem som äger det. En rad per sak, så kan raderna läggas in i mandatet.",
+      falt: [
+        { id: "gemensamt", namn: "Det som måste vara gemensamt", platshallare: "Data, begrepp, godkända AI-verktyg, var saker körs, säkerhet" },
+        { id: "fritt", namn: "Det som var och en får bygga fritt", platshallare: "Små verktyg för det egna arbetet, med påhittad eller godkänd information" },
+        { id: "synligt", namn: "Så ser vi vad som byggs", platshallare: "Ägare, arbetsbeskrivning, register hos IT, redovisning i takten" },
+      ],
+    },
     budskap: {
       rubrik: "Budskapet",
       tid: "25 min",
@@ -850,12 +874,13 @@ export default {
       form: "Cirka 2 timmar",
       delar: [
         ["5 min", "Läs in spelboken"],
-        ["25 min", "Leda: grunderna om fail fast och spårbundenhet, sedan gissningarna"],
-        ["20 min", "Våra spår"],
+        ["25 min", "Leda: grunderna om fail fast, spårbundenhet och Conways lag, sedan gissningarna"],
+        ["15 min", "Våra spår"],
+        ["15 min", "Det vi bygger själva"],
         ["20 min", "Budskapet"],
         ["20 min", "Mandatet"],
         ["10 min", "Takten"],
-        ["15 min", "Från försök till drift"],
+        ["10 min", "Från försök till drift"],
         ["5 min", "Självskattning mot lärandemålen, spelboken fastställs och sparas"],
       ],
     },

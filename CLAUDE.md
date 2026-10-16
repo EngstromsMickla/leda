@@ -31,8 +31,8 @@ Arbetsbeskrivning för den som utvecklar kursen vidare, människa eller Claude.
 
 - Varje block har `grund` i `kurs.js`: tre till sex bilder på cirka fem minuter som kursledaren visar först. Presentationsläget visar grunderna och gissningskorten i en följd (`presLista` i `app.js`); grundbilderna har inget svar att visa.
 - Gissningskorten handlar om konsekvenser för den egna organisationen, inte om fakta som grunderna redan tagit upp.
-- Förstå: hur en språkmodell fungerar (sannolikheter, tre källor till svaret: träning, samtal, verktyg), flyt är inte sanning, från fråga till agent, kostnad. Bedöma: envägs- och tvåvägsdörrar (Bezos 2015), hatt, frisyr, tatuering, klass och mandat, utforska och driva (March 1991). Generera: experiment och projekt, experimentets delar, bygg, mät, lär (Ries 2011), var idéerna finns. Leda: två sorters problem (Snowden och Boone 2007), traditionell problemlösning, fail fast, psykologisk trygghet (Edmondson 1999), spårbundenhet (Sydow, Schreyögg och Koch 2009; David 1985; Arthur 1989), innovatörens dilemma (Christensen 1997; Christensen, Wang och van Bever 2013).
-- Leda har gissningskort om Polaroid (Tripsas och Gavetti 2000) och om den billigare varianten (Christensen 1997), och övningen Våra spår (`svar.leda.spar`), som kan bli ett experimentkort och syns i spelboken.
+- Förstå: hur en språkmodell fungerar (sannolikheter, tre källor till svaret: träning, samtal, verktyg), flyt är inte sanning, från fråga till agent, kostnad. Bedöma: envägs- och tvåvägsdörrar (Bezos 2015), hatt, frisyr, tatuering, klass och mandat, utforska och driva (March 1991). Generera: experiment och projekt, experimentets delar, bygg, mät, lär (Ries 2011), var idéerna finns. Leda: två sorters problem (Snowden och Boone 2007), traditionell problemlösning, fail fast, psykologisk trygghet (Edmondson 1999), spårbundenhet med innovatörens dilemma som ett fall av den (Sydow, Schreyögg och Koch 2009; Christensen 1997), och Conways lag (Conway 1968; MacCormack, Rusnak och Baldwin 2012; Skelton och Pais 2019).
+- Leda har gissningskort om Polaroid (Tripsas och Gavetti 2000), om den billigare varianten (Christensen 1997; Christensen, Wang och van Bever 2013) och om när alla bygger själva (Henderson och Clark 1990). Övningen Våra spår (`svar.leda.spar`) kan bli ett experimentkort. Övningen Det vi bygger själva (`svar.leda.bygga`) vänder Conways lag: det gemensamma bestäms först, och raderna kan läggas in i mandatet. Båda syns i spelboken och slås ihop vid sammanslagning.
 
 ## Arbeta parallellt (v0.3)
 
@@ -65,6 +65,7 @@ Arbetsbeskrivning för den som utvecklar kursen vidare, människa eller Claude.
 ## Beslut
 
 - Panelgranskning 2026-10-16 (AI/ML-utvecklare, förändringsledare, cybersäkerhet, pedagogik, problembaserat lärande, ledamot i Plan Bs ledningsgrupp, ledamot i annan ledningsgrupp) gav v0.2: ledningens case, lärandemål med självskattning, förslag först på begäran, nya kort om säkerhet (promptinjektion, skugg-AI), utvärdering mot nuläge och styrelsens frågor med AI-förordningens krav på AI-kunnighet, separat kostnad per agentsteg, startmandat, låst länk, Intern-märkning, Rensa allt, organisationsbeskrivning i kursfilen och mått i Takten.
+- v0.5 (2026-10-16, Dans önskemål): innovatörens dilemma ingår i spårbundenheten; Conways lag som grundbild, gissningskort och övning i Leda.
 - v0.4 (2026-10-16, Dans önskemål): fem minuters grunder i presentationsläget före gissningarna i varje block, och spårbundenhet och innovatörens dilemma i Leda.
 - v0.3 (2026-10-16, Dans önskemål): sammanslagning av deltagarnas bidrag så att alla kan arbeta parallellt, och kursfilsverktyget för nya kunder.
 - Avfärdat i panelen: egen server för realtid (bryter principerna), poäng och prov (fel ton för en ledning), engelsk version (senare).

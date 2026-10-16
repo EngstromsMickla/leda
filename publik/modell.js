@@ -91,6 +91,7 @@ export function nyttSvar() {
     generera: { prompter: {}, ideer: [], experiment: [], redovisa: {}, fall: "", mal: {} },
     leda: {
       spar: { framgang: "", laser: "", bryta: "" },
+      bygga: { gemensamt: "", fritt: "", synligt: "" },
       budskap: { varfor: "", experiment: "", misslyckat: "" },
       mandat: { fritt: [], fraga: [], ledning: [] },
       takt: { prova: "", redovisa: "", besluta: "", matt: "", nasta: "" },
@@ -175,6 +176,8 @@ export function lasTillstand(indata) {
   const l = obj(s.leda);
   const spr = obj(l.spar);
   S.svar.leda.spar = { framgang: txt(spr.framgang, MAX.lang), laser: txt(spr.laser, MAX.lang), bryta: txt(spr.bryta, MAX.lang) };
+  const byg = obj(l.bygga);
+  S.svar.leda.bygga = { gemensamt: txt(byg.gemensamt, MAX.lang), fritt: txt(byg.fritt, MAX.lang), synligt: txt(byg.synligt, MAX.lang) };
   const bu = obj(l.budskap);
   S.svar.leda.budskap = { varfor: txt(bu.varfor, MAX.mellan), experiment: txt(bu.experiment, MAX.mellan), misslyckat: txt(bu.misslyckat, MAX.mellan) };
   const ma = obj(l.mandat);
@@ -374,6 +377,11 @@ export function spelbokHtml(S, kurs, { origin = "", lank = "", lankTyp = "data",
     ? `<dl class="budskap">${[["Det som har gjort oss framgångsrika", sp.framgang], ["Så håller det oss kvar", sp.laser], ["Det vi prövar för att bryta spåret", sp.bryta]]
       .filter(([, v]) => v).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${stycken(v)}</dd>`).join("")}</dl>`
     : tom("Spåren är inte beskrivna ännu.");
+  const by = sv.leda.bygga;
+  const bygga = by.gemensamt || by.fritt || by.synligt
+    ? `<dl class="budskap">${[["Det som måste vara gemensamt", by.gemensamt], ["Det som var och en får bygga fritt", by.fritt], ["Så ser vi vad som byggs", by.synligt]]
+      .filter(([, v]) => v).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${stycken(v)}</dd>`).join("")}</dl>`
+    : tom("Det är inte bestämt ännu.");
   const ma = sv.leda.mandat;
   const bn = K.beslutsnivaer;
   const kolumn = (rubrik, lista, niva) => `<div class="kol ${niva}"><h3>${esc(rubrik)}</h3>${bn[niva]?.vem ? `<p class="vem">${esc(bn[niva].vem)}${bn[niva].grans ? `, ${esc(bn[niva].grans)}` : ""}</p>` : ""}${lista.length ? `<ul>${lista.map((x) => `<li>${esc(x)}</li>`).join("")}</ul>` : tom("Inget ännu.")}</div>`;
@@ -483,9 +491,10 @@ footer img{width:22px;height:22px;opacity:.72;image-rendering:pixelated}
 ${origin ? `<div class="fortsatt">${lank ? `<a href="${esc(`${origin}/#${typ}=${lank}&till=spelbok`)}">Öppna kursen med allt vi har gjort</a><br><span>${typ === "las"
     ? "Länken är låst med en lösenfras som inte finns i den här filen. Den skickas inte till någon server."
     : "Länken bär innehållet själv och skickas inte till någon server, men den som har länken kan läsa innehållet. Dela den bara med dem som får läsa spelboken."}</span>` : `Läs in den här filen på <a href="${esc(origin)}/">${esc(origin.replace(/^https?:\/\//, ""))}</a> för att arbeta vidare.`}</div>` : ""}
-<nav class="inneh" aria-label="Innehåll"><a href="#fall">Vårt case</a><a href="#spar">Spår</a><a href="#budskap">Budskap</a><a href="#mandat">Mandat</a><a href="#takt">Takt</a><a href="#experiment">Experiment</a><a href="#beslut">Beslut</a><a href="#klassning">Klassning</a><a href="#karta">Försök och drift</a><a href="#ideer">Idéer</a><a href="#forsta">Det vi lärde oss</a><a href="#spelregler">Spelregler</a></nav>
+<nav class="inneh" aria-label="Innehåll"><a href="#fall">Vårt case</a><a href="#spar">Spår</a><a href="#bygga">Bygga själva</a><a href="#budskap">Budskap</a><a href="#mandat">Mandat</a><a href="#takt">Takt</a><a href="#experiment">Experiment</a><a href="#beslut">Beslut</a><a href="#klassning">Klassning</a><a href="#karta">Försök och drift</a><a href="#ideer">Idéer</a><a href="#forsta">Det vi lärde oss</a><a href="#spelregler">Spelregler</a></nav>
 ${sek("fall", "Ledningens case", fallet, "start/fall")}
 ${sek("spar", "Våra spår", spar, "leda/ov-spar")}
+${sek("bygga", "Det vi bygger själva", bygga, "leda/ov-bygga")}
 ${sek("budskap", "Budskapet", budskap, "leda/ov-budskap")}
 ${sek("mandat", "Mandatet", mandat, "leda/ov-mandat")}
 ${sek("takt", "Takten", takt, "leda/ov-takt")}
@@ -578,6 +587,7 @@ export function slaIhop(Sa, Sb, av = "") {
   const l = a.leda;
   for (const k of ["varfor", "experiment", "misslyckat"]) text(l.budskap, k, b.leda.budskap[k]);
   for (const k of ["framgang", "laser", "bryta"]) text(l.spar, k, b.leda.spar[k]);
+  for (const k of ["gemensamt", "fritt", "synligt"]) text(l.bygga, k, b.leda.bygga[k]);
   for (const kol of ["fritt", "fraga", "ledning"]) {
     const finns = new Set(l.mandat[kol].map((t) => t.trim().toLowerCase()));
     for (const t of b.leda.mandat[kol]) if (!finns.has(t.trim().toLowerCase())) { l.mandat[kol].push(t); finns.add(t.trim().toLowerCase()); r.texter += 1; }
