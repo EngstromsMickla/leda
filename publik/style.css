@@ -490,3 +490,11 @@ fieldset.plain { border: 0; padding: 0; margin: 10px 0 6px; min-width: 0; }
 .litteratur { padding-left: 20px; margin: 0 0 20px; font-size: 15px; max-width: 80ch; }
 .litteratur li { margin-bottom: 6px; }
 @media (max-width: 900px) { .om-layout { grid-template-columns: 1fr; } .kontaktkort { position: static; } }
+.tillbaka .falt-rad > span { white-space: pre-line; }
+
+/* Löpande arbete (v1.0) */
+.arbete-karta { grid-template-columns: repeat(5, 1fr); }
+.arbete-steg > h2 { margin-bottom: 8px; }
+.utskrift { margin-top: 32px; border-left: 4px solid var(--strong); }
+@media (max-width: 900px) { .arbete-karta { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .arbete-karta { grid-template-columns: 1fr; } }

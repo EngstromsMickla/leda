@@ -226,7 +226,7 @@ function valrad(namn, val, aktivt, satt, { aria = "" } = {}) {
 // ---------- Sidhuvud, status, sidfot ----------
 
 const DOLDA = ["kursfil"];
-const MENY = [["start", "Start"], ["forsta", "Förstå"], ["bedoma", "Bedöma"], ["generera", "Generera"], ["leda", "Leda"], ["spelbok", "Spelbok"], ["guide", "Så går det till"], ["om", "Om kursen"]];
+const MENY = [["start", "Start"], ["forsta", "Förstå"], ["bedoma", "Bedöma"], ["generera", "Generera"], ["leda", "Leda"], ["spelbok", "Spelbok"], ["arbete", "Löpande arbete"], ["guide", "Så går det till"], ["om", "Om kursen"]];
 
 function rutt() {
   const raw = decodeURIComponent(location.hash.replace(/^#/, ""));
@@ -277,7 +277,7 @@ function render() {
   visaMeny();
   visaStatus();
   const mal = document.getElementById("vy");
-  const vyer = { start: vStart, spelbok: vSpelbok, guide: vGuide, kursfil: vKursfil, om: vOm };
+  const vyer = { start: vStart, spelbok: vSpelbok, guide: vGuide, kursfil: vKursfil, om: vOm, arbete: vArbete };
   fyll(mal, lasKod ? vLas() : (vyer[vy] || (() => vBlock(blockAv(vy))))());
   if (vy === "kursfil") visaVarningar();
   document.title = vy === "start" ? kurs.namn : `${(MENY.find(([id]) => id === vy) || [0, kurs.kursfilverktyg.rubrik])[1]} · ${kurs.namn}`;
@@ -357,8 +357,11 @@ function etikettrad(ov) {
     ov.info ? h("span", { class: "etikett info", text: ov.info }) : null);
 }
 
+let iArbete = false; // i Löpande arbete visas korten utan övningarnas tider och instruktioner
+
 function ovningskort(id, ...innehall) {
   const ov = kurs.ovningar[id];
+  if (iArbete) return h("section", { class: "card ovning", id: `ov-${id}` }, ...innehall);
   return h("section", { class: "card ovning", id: `ov-${id}` },
     h("div", { class: "eyebrow", text: "Pröva" }),
     h("h3", { class: "kortrubrik", text: ov.rubrik }), etikettrad(ov),
@@ -958,7 +961,7 @@ function nyttExperiment(ide) {
   S.svar.generera.experiment.push(e);
   andrat(true);
   render.hoppa = true;
-  location.hash = `#generera/exp-${e.id}`;
+  location.hash = `#${rutt().vy === "arbete" ? "arbete" : "generera"}/exp-${e.id}`;
 }
 
 function experimentkort(e) {
@@ -1074,6 +1077,53 @@ function vSpelbok() {
       ex.filter((e) => e.status === "planerat" || e.status === "pagar").map((e) => h("li", { text: `${e.titel}: ${e.ansvarig || "ansvarig saknas"}, stopp ${e.stopp || "saknas"}.` }))),
     rensaKnapp(),
   ];
+}
+
+// ---------- Löpande arbete efter kursen ----------
+
+async function oppnaKort() {
+  const flik = window.open("", "_blank");
+  const html = M.kortHtml(S, kurs, { logga: await logga() });
+  const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+  if (flik) flik.location.href = url; else location.assign(url);
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+}
+
+function vArbete() {
+  const t = kurs.arbete;
+  const ex = S.svar.generera.experiment;
+  const aktiva = ex.filter((e) => e.status === "planerat" || e.status === "pagar").length;
+  const exempel = /påhittat/i.test(K().organisation);
+  const steg = (nr, rubrik, ...innehall) => h("section", { class: "fas-sektion arbete-steg", id: `steg-${nr}` }, h("h2", { text: `${nr}. ${rubrik}` }), ...innehall);
+  iArbete = true;
+  try {
+    return [
+      ...rubrikrad(t.eyebrow, t.rubrik, t.ingress),
+      h("ol", { class: "varv kf-steg arbete-karta" }, t.steg.map(([namn, text]) => h("li", {}, h("div", {}, h("b", { text: namn }), h("span", { text }))))),
+      steg(1, "Läs in spelboken",
+        exempel
+          ? h("p", { class: "note strong" }, "Ingen spelbok är inläst. Öppna länken i er spelbok, eller läs in spelboksfilen.")
+          : p(`${K().organisation} · ${S.meta.grupp || K().grupp} · ${ex.length} experiment, varav ${aktiva} planerade eller pågående · ${S.beslut.length} beslut i loggen.`, "hjalp"),
+        h("div", { class: "actions tight-actions" }, knapp("Läs in spelbok", valjFil, exempel ? "" : "ghost", { "data-fokus": "arbete-las" }))),
+      steg(2, "Nya idéer", p("Ta emot det som kommit in sedan sist. Det är uppgiften som är idén, inte tekniken.", "hjalp"), OVNINGAR.ideer()),
+      steg(3, "Experimenten", p("Redovisa det som pågår: vad hände, vad misslyckades, vad lärde ni er. Besluta sedan: anta, justera eller stoppa.", "hjalp"),
+        experimentRedovisning(),
+        h("h3", { class: "underrubrik", text: "Nya och planerade experimentkort" }),
+        OVNINGAR.experiment()),
+      steg(4, "Nya beslut", p("Klassa varje nytt beslut innan det fattas. Beslutsguiden ger ett förslag; loggen visar alla beslut.", "hjalp"),
+        OVNINGAR.guide(), beslutslogg("leda")),
+      steg(5, "Takten och spara", OVNINGAR.takt(),
+        h("div", { class: "actions" },
+          h("a", { class: "btn", href: "#spelbok/spara" }, "Spara spelboken"),
+          h("a", { class: "btn ghost", href: "#leda/ov-karta" }, "Från försök till drift"))),
+      h("section", { class: "card utskrift", id: "utskrift" },
+        h("h2", { class: "kortrubrik", text: t.utskrift.rubrik }),
+        p(t.utskrift.text, "hjalp"),
+        knapp("Öppna korten för utskrift", oppnaKort, "ghost", { "data-fokus": "skriv-ut-kort" })),
+    ];
+  } finally {
+    iArbete = false;
+  }
 }
 
 // ---------- Om kursen ----------

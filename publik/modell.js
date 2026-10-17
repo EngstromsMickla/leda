@@ -354,6 +354,48 @@ export async function packaUpp(kod) {
 
 // ---------- Spelboken som fristående HTML-fil ----------
 
+// Formateringen ligger i konstanter, så att kontrollsummorna i sajtens CSP (index.html) kan räknas fram och testas.
+// En fil som öppnas i ny flik ärver sajtens CSP, och där är bara dessa två formateringar tillåtna.
+export const STIL_SPELBOK = `
+:root{--paper:#f6f4ef;--ink:#1d2733;--muted:#5d6773;--line:#ddd8cd;--accent:#2f6b5e;--accent-soft:#e3eeea;--ochre:#a57a12;--ochre-soft:#f5ecd3;--rust:#b8532c;--rust-soft:#f6e4dc;--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans)}
+main{max-width:980px;margin:0 auto;padding:32px 16px 24px}
+h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2}h1{font-size:clamp(28px,5vw,40px);margin:0 0 8px}h2{font-size:24px;margin:0 0 12px}h3{font-size:17px;margin:14px 0 6px}
+p{margin:0 0 10px;max-width:70ch}.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.lead{color:var(--muted)}section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:0 0 16px;break-inside:avoid}
+.tom{color:var(--muted);font-style:italic}.liten{font-size:14px;color:var(--muted)}.vem{font-size:14px;color:var(--muted);margin:0 0 6px}
+.tre{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.kol{border-radius:8px;padding:10px 14px;background:var(--paper)}.kol h3{margin-top:0}
+.kol.hatt,.kol.explore{background:var(--accent-soft)}.kol.frisyr,.kol.grind{background:var(--ochre-soft)}.kol.tatuering,.kol.exploit{background:var(--rust-soft)}
+.kol ul{padding-left:18px;margin:0}.kol li{margin-bottom:4px}
+dl{margin:0}dt{font-weight:600;margin-top:10px}dd{margin:2px 0 0}.rader{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px}.rader dt,.rader dd{margin:0}
+.tabell{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}th{font-size:13px;color:var(--muted)}
+.vidare{display:inline-block;margin-top:12px;font-weight:600;color:var(--accent);font-size:15px}
+.fortsatt{background:var(--accent);color:#fff;border-radius:10px;padding:16px 20px;margin:0 0 20px}.fortsatt a{color:#fff;font-weight:600}
+.klass{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);border:1px solid var(--rust);border-radius:4px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+.fall{font:600 20px/1.35 var(--serif);border-left:3px solid var(--ochre);padding-left:12px}.mellanrubrik{margin-top:20px;padding-top:12px;border-top:1px solid var(--line)}
+nav.inneh{font-size:14px;margin:0 0 20px;display:flex;flex-wrap:wrap;gap:4px 14px}nav.inneh a{color:var(--accent)}
+footer{max-width:980px;margin:0 auto;padding:16px 16px 40px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
+footer img{width:22px;height:22px;opacity:.72;image-rendering:pixelated}
+@media (max-width:700px){.tre{grid-template-columns:1fr}.rader{grid-template-columns:1fr}}
+@media print{body{background:#fff}section{border:0;padding:0 0 12px}.fortsatt,.vidare,nav.inneh{display:none}}
+`;
+export const STIL_KORT = `
+:root{--ink:#1d2733;--muted:#5d6773;--line:#c9c3b6;--accent:#2f6b5e;--ochre:#a57a12;--rust:#b8532c;--serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);font:12px/1.35 var(--sans);background:#f6f4ef}
+.huvud{max-width:820px;margin:0 auto;padding:20px 16px 8px}.huvud h1{font:600 22px/1.2 var(--serif);margin:0 0 4px}.huvud p{margin:0 0 6px;color:var(--muted)}
+.ark{max-width:820px;margin:0 auto;padding:8px 16px 24px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kort{background:#fff;border:1.5px solid var(--ink);border-radius:8px;padding:10px 12px;break-inside:avoid;min-height:128mm;display:flex;flex-direction:column;gap:4px;border-top:6px solid var(--accent)}
+.kort.ide{border-top-color:var(--ochre)}.kort.beslut{border-top-color:var(--rust)}
+.typ{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.kort h2{font:600 15px/1.25 var(--serif);margin:0 0 4px;min-height:20px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.rad{display:grid;gap:1px}.etikett{font-size:10px;color:var(--muted);font-weight:600}
+.varde{border-bottom:1px dotted var(--line);min-height:18px;white-space:pre-wrap}.varde.h2{min-height:34px}.varde.h3{min-height:52px}
+.tre{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.fot{max-width:820px;margin:0 auto;padding:0 16px 24px;color:var(--muted);display:flex;gap:8px;align-items:center}.fot img{width:16px;height:16px;opacity:.7}
+@media (max-width:640px){.ark{grid-template-columns:1fr}.kort{min-height:0}}
+@media print{body{background:#fff}.huvud p.tips{display:none}.ark{gap:6mm;padding:0}.kort{min-height:128mm}@page{size:A4;margin:10mm}}
+`;
+
 export function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
@@ -474,29 +516,7 @@ export function spelbokHtml(S, kurs, { origin = "", lank = "", lankTyp = "data",
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">
 <meta name="referrer" content="no-referrer">
 <title>${esc(titel)}</title>
-<style>
-:root{--paper:#f6f4ef;--ink:#1d2733;--muted:#5d6773;--line:#ddd8cd;--accent:#2f6b5e;--accent-soft:#e3eeea;--ochre:#a57a12;--ochre-soft:#f5ecd3;--rust:#b8532c;--rust-soft:#f6e4dc;--serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;--sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color-scheme:light}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans)}
-main{max-width:980px;margin:0 auto;padding:32px 16px 24px}
-h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.2}h1{font-size:clamp(28px,5vw,40px);margin:0 0 8px}h2{font-size:24px;margin:0 0 12px}h3{font-size:17px;margin:14px 0 6px}
-p{margin:0 0 10px;max-width:70ch}.eyebrow{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600}
-.lead{color:var(--muted)}section{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px 22px;margin:0 0 16px;break-inside:avoid}
-.tom{color:var(--muted);font-style:italic}.liten{font-size:14px;color:var(--muted)}.vem{font-size:14px;color:var(--muted);margin:0 0 6px}
-.tre{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.kol{border-radius:8px;padding:10px 14px;background:var(--paper)}.kol h3{margin-top:0}
-.kol.hatt,.kol.explore{background:var(--accent-soft)}.kol.frisyr,.kol.grind{background:var(--ochre-soft)}.kol.tatuering,.kol.exploit{background:var(--rust-soft)}
-.kol ul{padding-left:18px;margin:0}.kol li{margin-bottom:4px}
-dl{margin:0}dt{font-weight:600;margin-top:10px}dd{margin:2px 0 0}.rader{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px}.rader dt,.rader dd{margin:0}
-.tabell{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:15px}th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--line)}th{font-size:13px;color:var(--muted)}
-.vidare{display:inline-block;margin-top:12px;font-weight:600;color:var(--accent);font-size:15px}
-.fortsatt{background:var(--accent);color:#fff;border-radius:10px;padding:16px 20px;margin:0 0 20px}.fortsatt a{color:#fff;font-weight:600}
-.klass{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);border:1px solid var(--rust);border-radius:4px;padding:2px 8px;margin-left:8px;vertical-align:middle}
-.fall{font:600 20px/1.35 var(--serif);border-left:3px solid var(--ochre);padding-left:12px}.mellanrubrik{margin-top:20px;padding-top:12px;border-top:1px solid var(--line)}
-nav.inneh{font-size:14px;margin:0 0 20px;display:flex;flex-wrap:wrap;gap:4px 14px}nav.inneh a{color:var(--accent)}
-footer{max-width:980px;margin:0 auto;padding:16px 16px 40px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center}
-footer img{width:22px;height:22px;opacity:.72;image-rendering:pixelated}
-@media (max-width:700px){.tre{grid-template-columns:1fr}.rader{grid-template-columns:1fr}}
-@media print{body{background:#fff}section{border:0;padding:0 0 12px}.fortsatt,.vidare,nav.inneh{display:none}}
-</style>
+<style>${STIL_SPELBOK}</style>
 </head>
 <body>
 <main>
@@ -760,4 +780,44 @@ export function kontaktMejl(kontakt, falt) {
     kropp,
     lank: `mailto:${adress}?subject=${encodeURIComponent(`Leda i AI-takt: ${amne}`)}&body=${encodeURIComponent(kropp)}`,
   };
+}
+
+// ---------- Kort att skriva ut: ifyllda experimentkort och tomma kort för hand ----------
+
+export function kortHtml(S, kurs, { logga = "" } = {}) {
+  const K = S.kursfil;
+  const ex = S.svar.generera.experiment.filter((e) => e.status === "planerat" || e.status === "pagar");
+  const rad = (etikett, varde, hojd = 1) => `<div class="rad"><span class="etikett">${esc(etikett)}</span><div class="varde h${hojd}">${varde ? esc(varde) : ""}</div></div>`;
+  const KL = { hatt: "Hatt", frisyr: "Frisyr", tatuering: "Tatuering" };
+  const expKort = (e) => `<section class="kort exp"><div class="typ">Experimentkort</div><h2>${e ? esc(e.titel) : "&nbsp;"}</h2>
+    ${rad("Hypotes: vi tror att ... leder till ...", e?.hypotes, 2)}${rad("Minsta möjliga test", e?.test, 2)}${rad("Jämfört med i dag", e?.nulage)}
+    ${rad("Mått", e?.matt)}${rad("Det här räknas som misslyckat", e?.misslyckat)}
+    <div class="tre">${rad("Ansvarig", e?.ansvarig)}${rad("Timmar", e && e.timmar !== "" ? String(e.timmar) : "")}${rad("Stoppdatum", e?.stopp)}</div>
+    ${rad("Klass: hatt, frisyr eller tatuering", e ? KL[e.klass] : "")}</section>`;
+  const ideKort = () => `<section class="kort ide"><div class="typ">Idékort</div><h2>&nbsp;</h2>
+    ${rad("Uppgiften som tar tid, återkommer eller irriterar", "", 3)}${rad("Hur ofta?", "")}${rad("Behövs samma svar varje gång? Då är det automation.", "")}
+    ${rad("Vilken information: öppen, intern eller kunddata?", "")}${rad("Föreslagen av", "")}</section>`;
+  const beslutKort = () => `<section class="kort beslut"><div class="typ">Beslutskort</div><h2>&nbsp;</h2>
+    ${rad("Beslutet", "", 2)}
+    ${rad("Kan vi ångra det inom en månad utan nämnvärd kostnad?", "")}${rad("Vilken information berörs?", "")}
+    ${rad("Blir någon beroende av det?", "")}${rad("Ryms kostnaden inom mandatet för en hatt?", "")}
+    ${rad("Berör det prismodell, plattform, policy eller avtal med kund?", "")}
+    <div class="tre">${rad("Klass", "")}${rad("Beslutas av", "")}${rad("Datum", "")}</div></section>`;
+  const kort = [...ex.map(expKort), expKort(null), expKort(null), ideKort(), ideKort(), beslutKort(), beslutKort()];
+  return `<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:">
+<title>${esc(`Kort att skriva ut, ${K.organisation}`)}</title>
+<style>${STIL_KORT}</style>
+</head>
+<body>
+<div class="huvud"><h1>Kort att skriva ut</h1><p>${esc(K.organisation)} · ${esc(S.meta.grupp || K.grupp)} · ${esc(idag())}</p><p class="tips">Skriv ut med webbläsarens utskrift. Fyra kort per A4-sida. Det som fylls i för hand förs in under Löpande arbete efteråt.</p></div>
+<main class="ark">${kort.join("")}</main>
+<div class="fot">${logga ? `<img src="${esc(logga)}" alt="Mickla">` : ""}<span>${esc(kurs.upphov)} · ${esc(kurs.namn)} · ${esc(kurs.version)}</span></div>
+</body>
+</html>
+`;
 }

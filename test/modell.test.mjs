@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import crypto from "node:crypto";
 import kurs from "../publik/innehall/kurs.js";
 import * as M from "../publik/modell.js";
 
@@ -357,4 +358,32 @@ test("kontaktformuläret sätter ihop ett mejl till rätt adress utan att något
   const ond = M.kontaktMejl(k, { amne: "Något annat", meddelande: "x".repeat(5000) });
   assert.equal(ond.amne, "Leda i AI-takt: Fråga om kursen");
   assert.equal(ond.kropp.length, M.MAX_MEJL);
+});
+
+test("korten att skriva ut har ifyllda och tomma kort och escapar text", () => {
+  const S = fylltTillstand();
+  S.svar.generera.experiment[0].titel = "Pröva <b>anbudsstöd</b>";
+  const html = M.kortHtml(S, kurs, {});
+  assert.ok(html.startsWith("<!doctype html>"));
+  assert.ok(!html.includes("<b>anbudsstöd</b>"));
+  assert.match(html, /Pröva &lt;b&gt;anbudsstöd&lt;\/b&gt;/);
+  assert.equal((html.match(/class="kort exp"/g) || []).length, 3, "ett pågående och två tomma experimentkort");
+  assert.equal((html.match(/class="kort ide"/g) || []).length, 2);
+  assert.equal((html.match(/class="kort beslut"/g) || []).length, 2);
+  assert.ok(!/<script/.test(html));
+  S.svar.generera.experiment[0].status = "lyckat";
+  assert.equal((M.kortHtml(S, kurs, {}).match(/class="kort exp"/g) || []).length, 2, "avslutade experiment skrivs inte ut");
+});
+
+test("sajtens CSP tillåter exakt spelbokens och kortens formatering, så att de fungerar i ny flik", () => {
+  const html = fs.readFileSync(new URL("../publik/index.html", import.meta.url), "utf8");
+  const csp = html.match(/Content-Security-Policy" content="([^"]+)"/)[1];
+  for (const stil of [M.STIL_SPELBOK, M.STIL_KORT]) {
+    const hash = `'sha256-${crypto.createHash("sha256").update(stil, "utf8").digest("base64")}'`;
+    assert.ok(csp.includes(hash), `kontrollsumman ${hash} saknas i CSP; uppdatera style-src i index.html`);
+  }
+  assert.ok(!/unsafe-inline/.test(csp));
+  const S = fylltTillstand();
+  assert.ok(M.spelbokHtml(S, kurs, {}).includes(`<style>${M.STIL_SPELBOK}</style>`));
+  assert.ok(M.kortHtml(S, kurs, {}).includes(`<style>${M.STIL_KORT}</style>`));
 });

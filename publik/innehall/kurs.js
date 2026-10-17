@@ -4,7 +4,7 @@
 
 export default {
   namn: "Leda i AI-takt",
-  version: "prototyp v0.9",
+  version: "prototyp v1.0",
   upphov: "© Engströms Mickla AB 2026",
 
   start: {
@@ -13,6 +13,23 @@ export default {
     ingress: "En kort kurs för en ledning som ska leda ett kunskapsföretag när AI förändrar arbetet snabbt. Ni lär er grunderna om AI och praktiska metoder för fail fast, genom att pröva själva, inte bara lyssna.",
     lofte: "Inget ni skriver lämnar webbläsaren. Ingen AI anropas härifrån.",
     antagande: "Vi utgår från att ni kan leda ett bolag. Kursen ger er det som är nytt: vad AI är och inte är, hur ni bedömer beslut när tekniken rör sig snabbt, hur ni får fram och prövar idéer, och hur ni leder en organisation som experimenterar.",
+  },
+
+  arbete: {
+    eyebrow: "Efter kursen",
+    rubrik: "Löpande arbete",
+    ingress: "För ledningens vanliga möten efter kursen. Läs in spelboken, gå igenom stegen och spara spelboken igen. Ingen presentation och inga övningar, bara korten ni arbetar med.",
+    steg: [
+      ["Läs in", "Öppna spelboken från förra gången"],
+      ["Idéer", "Ta emot nya idéer"],
+      ["Experiment", "Redovisa, besluta och starta nya"],
+      ["Beslut", "Klassa och för in nya beslut"],
+      ["Spara", "Takten, och spelboken sparas igen"],
+    ],
+    utskrift: {
+      rubrik: "Kort att skriva ut",
+      text: "För möten vid bordet eller på väggen: experimentkort för alla planerade och pågående experiment, och tomma idé-, experiment- och beslutskort att fylla i för hand. Det som skrivs för hand förs in här efteråt.",
+    },
   },
 
   om: {
@@ -24,7 +41,7 @@ export default {
         stycken: [
           "Kursen har fyra block: Förstå, Bedöma, Generera och Leda. Varje block följer samma varv: Lära, Pröva, Redovisa och Besluta. Lära börjar med fem minuters grunder och fortsätter med gissningar om vad det betyder för den egna organisationen. Allt som handlar om att pröva görs av deltagarna själva.",
           "Kursen ges som en förmiddag och ett eller två kortare pass några veckor senare, med experiment i vardagen emellan och ett uppföljningspass efter cirka tre månader. Hela tiden arbetar ledningen med en verklig fråga som den själv har valt.",
-          "Det deltagarna tar med sig är Ledningens spelbok: budskap, mandat, takt, experiment och beslut, samlade i en fil som ledningen återkommer till.",
+          "Det deltagarna tar med sig är Ledningens spelbok: budskap, mandat, takt, experiment och beslut, samlade i en fil som ledningen återkommer till. Efter kursen används sidan Löpande arbete på ledningens vanliga möten, utan presentation och övningar.",
         ],
       },
       {
@@ -175,7 +192,7 @@ export default {
         "Uppskatta vad AI-användning kostar och vad som driver kostnaden",
         "Peka ut var granskning och säkerhet kräver ledningens beslut",
       ],
-      fallFraga: "Vad i ert case är en regel och vad är en tolkning? Var skulle ett fel bli dyrt, och vad skulle det kosta att använda AI fullt ut?",
+      fallFraga: "Gå igenom ert case i tre steg:\n1. Vilka delar av arbetet följer fasta regler och kan skötas av vanlig automation, och vilka kräver bedömning där AI kan hjälpa?\n2. Var i de delar där AI hjälper skulle ett fel bli dyrt, och vem granskar där?\n3. Ungefär vad skulle det kosta att använda AI fullt ut i de delarna?",
       ingress: "Grunderna som en ledning behöver för att fatta beslut om AI: varför svaren varierar, varför varje körning kostar, varför granskning är ett ledningsansvar och hur fort tekniken rör sig.",
       grund: [
         {
@@ -542,7 +559,7 @@ export default {
         "Ge ett tydligt mandat för vad som får prövas utan att fråga",
         "Bestämma takt, mått och hur det som fungerar tas i drift",
       ],
-      fallFraga: "Vad behöver organisationen höra om ert case, från vem, och vad har ni nu bestämt som ni inte hade bestämt före kursen?",
+      fallFraga: "Gå igenom ert case i två steg:\n1. Vad behöver organisationen höra om det, och från vem: ledningen eller närmaste chef?\n2. Vad har ni nu bestämt om ert case som ni inte hade bestämt före kursen?",
       ingress: "Klassisk förändringsledning förbereder organisationen för en känd lösning. Vid fail fast finns ingen färdig lösning. Ledningens uppgift blir att sätta ramen: varför vi experimenterar, vad som får prövas utan att fråga, i vilken takt, och hur det som fungerar tas i drift.",
       grund: [
         {
@@ -700,13 +717,13 @@ export default {
       info: "Ingen intern information behövs",
       steg: [
         "Kopiera frågan och klistra in den i ert godkända AI-verktyg.",
-        "Öppna en ny chatt och ställ samma fråga igen. Gör det en tredje gång.",
+        "Öppna en ny chatt och ställ samma fråga igen. Gör det en tredje gång, också i en ny chatt. I samma chatt ser AI sina tidigare svar och varierar dem med flit, och då blir testet missvisande.",
         "Jämför svaren och skriv ner vad ni såg.",
       ],
       prompt: "Du är rådgivare åt ledningsgruppen i {beskrivning}. Föreslå tre sätt som bolaget kan använda AI för att öka lönsamheten nästa år. Svara med en mening per förslag.",
       falt: [
         { id: "skillnad", namn: "Vad skilde sig mellan svaren?" },
-        { id: "tal", namn: "Vilka av våra uppgifter tål den variationen, och vilka gör det inte?" },
+        { id: "tal", namn: "Varierade orden eller perspektiven? Vilka av våra uppgifter tål den variationen, och vilka gör det inte?" },
       ],
     },
     uppgifter: {
@@ -786,7 +803,7 @@ export default {
           rubrik: "Bygg ett litet verktyg",
           syfte: "Se med egna ögon att det har blivit billigt att bygga.",
           prompt: "Skriv en enda fristående HTML-fil, utan externa filer eller bibliotek, med en enkel kalkylator. Man fyller i antal timmar och timpris för ett konsultuppdrag och en procentsats för hur mycket tid AI sparar. Visa intäkt och marginal vid löpande räkning respektive fast pris, före och efter AI. Svensk text, tydliga etiketter.",
-          fraga: "Hur lång tid tog det? Vad skulle ni våga använda det här till, och vad inte?",
+          fraga: "Hur lång tid tog det? Vilka antaganden fick AI göra själv, till exempel om kostnaden per timme? Vad skulle ni våga använda det här till, och vad inte?",
           tips: "Spara svaret som en fil som slutar på .html och öppna den i webbläsaren. Vissa AI-verktyg visar resultatet direkt.",
         },
         {
@@ -966,7 +983,7 @@ export default {
       namn: "Uppföljning",
       form: "Cirka tre månader efter sista passet, en timme",
       delar: [
-        ["5 min", "Läs in spelboken"],
+        ["5 min", "Läs in spelboken och öppna Löpande arbete"],
         ["20 min", "Experimenten sedan sist: anta, justera eller stoppa"],
         ["15 min", "Takten och måtten: hålls de, och vad visar de?"],
         ["15 min", "Mandatet och klassningen: har något bytt klass?"],
@@ -1010,8 +1027,8 @@ export default {
         text: "Öppna länken i spelboken och ange lösenfrasen, eller läs in spelboksfilen. Allt ni gjort finns kvar och ni fortsätter där ni slutade.",
       },
       {
-        rubrik: "Efter tre månader",
-        text: "Ett uppföljningspass på en timme visar om spelboken används: experimenten sedan sist, om takten och måtten hålls, och om något beslut har bytt klass. Sätt datumet under Takten innan ni skiljs åt.",
+        rubrik: "Efter kursen",
+        text: "Använd sidan Löpande arbete på ledningens vanliga möten: läs in spelboken, ta emot nya idéer, redovisa och starta experiment, klassa nya beslut och spara spelboken igen. Efter cirka tre månader visar ett uppföljningspass på en timme om spelboken används. Sätt datumet under Takten innan ni skiljs åt.",
       },
     ],
     data: [
