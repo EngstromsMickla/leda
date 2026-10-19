@@ -390,7 +390,7 @@ function vStart() {
         h("div", { class: "actions" },
           knapp("Läs in kursfil eller spelbok", valjFil),
           h("a", { class: "lank", href: "#kursfil" }, "Gör en ny kursfil")),
-        p("Fortsätter ni från ett tidigare pass? Öppna länken i spelboken, eller läs in spelboksfilen här.", "hjalp small")),
+        p("Fortsätter ni från en tidigare modul, eller har kursledaren gjort en startspelbok? Öppna länken i spelboken, eller läs in spelboksfilen här.", "hjalp small")),
       h("section", { class: "card" },
         h("h2", { class: "kortrubrik", text: "Vilka deltar?" }),
         falt("Gruppens namn", S.meta.grupp, (v) => { S.meta.grupp = v.slice(0, 160); }, { typ: "text", max: 160, fokus: "grupp" }),
@@ -516,7 +516,7 @@ function vStartmandat() {
     andrat();
   });
   return h("div", { class: "note strong startmandat" },
-    h("b", { text: "Startmandat för testerna fram till nästa pass" }),
+    h("b", { text: "Startmandat för testerna fram till nästa modul" }),
     h("label", { class: "falt-rad timmar" }, h("span", { text: "Hur många timmar får ett test ta? Lämnas fältet tomt gäller sex timmar." }), tim),
     forslag,
     knapp("Lägg in som beslut", () => {
@@ -1199,16 +1199,17 @@ function vGuide() {
         h("ol", { class: "faser", "data-antal": "3" },
           h("li", { class: "fas" }, h("span", { class: "fas-namn", text: "Spelboken" }), h("span", { class: "fas-text", text: "En fil att spara, skriva ut och dela" })),
           h("li", { class: "fas" }, h("span", { class: "fas-namn", text: "Länken" }), h("span", { class: "fas-text", text: "Öppnar kursen med allt ni har gjort" })),
-          h("li", { class: "fas" }, h("span", { class: "fas-namn", text: "Nästa pass" }), h("span", { class: "fas-text", text: "Ni fortsätter där ni slutade" }))))),
+          h("li", { class: "fas" }, h("span", { class: "fas-namn", text: "Nästa modul" }), h("span", { class: "fas-text", text: "Ni fortsätter där ni slutade" }))))),
     h("h2", { text: "Roller" }),
     h("div", { class: "roller" }, g.roller.map(([namn, text]) => h("div", { class: "card tight" }, h("h4", { text: namn }), p(text, "tight")))),
     h("h2", { text: "Steg för steg" }),
     h("ol", { class: "instr-steg" }, g.steg.map((s) => h("li", {}, h("h3", { text: s.rubrik }), p(s.text)))),
     h("h2", { text: "Kursplan" }),
-    h("div", { class: "passlista" }, kurs.pass.map((ps) => h("section", { class: ps.id === "mellan" ? "card tight mellan" : "card tight" },
+    h("div", { class: "passlista" }, kurs.pass.map((ps) => h("section", { class: ps.id === "forberedelse" || ps.id === "uppfoljning" ? "card tight mellan" : "card tight" },
       h("h3", { text: ps.namn }), p(ps.form, "hjalp"),
       h("table", { class: "schema" }, h("tbody", {}, ps.delar.map(([tid, vad]) => h("tr", {}, h("td", { class: "tid", text: tid }), h("td", { text: vad })))))))),
     p(kurs.passKort, "note"),
+    ...utskicksVy(),
     h("h2", { text: "Om informationen" }),
     h("ul", { class: "lista-steg" }, g.data.map((d) => h("li", { text: d }))),
     h("h2", { text: "Kursfilen" }),
@@ -1216,6 +1217,38 @@ function vGuide() {
     p("En ny kursfil görs i kursfilsverktyget: AI tar fram ett utkast ur organisationens egna dokument, och du granskar och laddar ner.", "hjalp"),
     h("div", { class: "actions" },
       h("a", { class: "btn", href: "#kursfil" }, "Öppna kursfilsverktyget")),
+  ];
+}
+
+// ---------- Utskicket före kursen ----------
+
+const utskickVarden = {};
+function utskicksVy() {
+  const u = kurs.utskick;
+  const amneEl = h("pre", { class: "utskick-amne" });
+  const brodEl = h("pre", { class: "utskick-brod" });
+  const rita = () => {
+    amneEl.textContent = M.utskickText(u.amne, u.falt, utskickVarden);
+    brodEl.textContent = M.utskickText(u.brod, u.falt, utskickVarden);
+  };
+  const falten = u.falt.map((f) => {
+    const id = `utskick-${f.id}`;
+    const el = h("input", { id, type: "text", maxlength: 120, placeholder: f.platshallare, value: utskickVarden[f.id] || "" });
+    el.addEventListener("input", () => { utskickVarden[f.id] = el.value; rita(); });
+    return h("label", { class: "falt-rad", for: id }, h("span", { text: f.namn }), el);
+  });
+  rita();
+  return [
+    h("h2", { id: "utskick", text: u.rubrik }),
+    p(u.text),
+    h("div", { class: "card tight" }, falten),
+    h("div", { class: "prompt" },
+      h("div", { class: "prompt-huvud" }, h("span", { text: "Ämnesrad" }), knapp("Kopiera", (e) => kopiera(amneEl.textContent, e.currentTarget), "liten-knapp")),
+      amneEl),
+    h("div", { class: "prompt" },
+      h("div", { class: "prompt-huvud" }, h("span", { text: "Utskicket" }), knapp("Kopiera", (e) => kopiera(brodEl.textContent, e.currentTarget), "liten-knapp")),
+      brodEl),
+    p("Tomma fält fylls med exemplet. Innan underlaget läggs i ChatGPT kan du behöva stänga av att indata används för träning, beroende på vilken prenumeration du har. Kontrollera inställningarna för datakontroll i ditt konto.", "hjalp"),
   ];
 }
 
@@ -1309,14 +1342,14 @@ function vParallellt() {
 // ---------- Kursfilsverktyget ----------
 
 const UTKAST_NYCKEL = "leda-i-ai-takt-kursfil";
-let utkast = null; // { k: kursfil, saknas: [] }
+let utkast = null; // { k: kursfil, saknas: [], deltagare: [] }
 let exempelText = "";
 
 function sparaUtkast() { try { sessionStorage.setItem(UTKAST_NYCKEL, JSON.stringify(utkast)); } catch { /* bara i minnet */ } }
 function lasUtkast() {
   try {
     const d = JSON.parse(sessionStorage.getItem(UTKAST_NYCKEL) || "null");
-    if (d && d.k) utkast = { k: M.lasKursfil({ ...d.k, format: M.FORMAT_KURSFIL }), saknas: Array.isArray(d.saknas) ? d.saknas.map((x) => M.txt(x)).slice(0, 30) : [] };
+    if (d && d.k) utkast = { k: M.lasKursfil({ ...d.k, format: M.FORMAT_KURSFIL }), saknas: Array.isArray(d.saknas) ? d.saknas.map((x) => M.txt(x)).slice(0, 30) : [], deltagare: M.lasDeltagare(d.deltagare) };
   } catch { utkast = null; }
 }
 let utkastTimer = null;
@@ -1341,7 +1374,7 @@ kursfilval.addEventListener("change", async () => {
     if (fil.size > MAX_FIL) throw new Error("storlek");
     const r = M.lasFil(await fil.text());
     if (r.typ !== "kursfil") throw new Error("typ");
-    utkast = { k: r.kursfil, saknas: [] };
+    utkast = { k: r.kursfil, saknas: [], deltagare: [] };
     utkastAndrat(true);
     flash(`Kursfilen för ${r.kursfil.organisation} är öppnad i verktyget.`);
   } catch {
@@ -1354,14 +1387,14 @@ function borja(fran) {
     hamtaExempel().then((t) => {
       const k = t ? M.lasKursfil(t) : M.tomKursfil();
       k.organisation = "Ny organisation";
-      utkast = { k, saknas: [] };
+      utkast = { k, saknas: [], deltagare: [] };
       utkastAndrat(true);
     });
   } else if (fran === "tom") {
-    utkast = { k: M.tomKursfil(), saknas: [] };
+    utkast = { k: M.tomKursfil(), saknas: [], deltagare: [] };
     utkastAndrat(true);
   } else if (fran === "nu") {
-    utkast = { k: JSON.parse(JSON.stringify(K())), saknas: [] };
+    utkast = { k: JSON.parse(JSON.stringify(K())), saknas: [], deltagare: [] };
     utkastAndrat(true);
   } else kursfilval.click();
 }
@@ -1416,9 +1449,9 @@ function vKursfil() {
   const lasSvar = () => {
     try {
       const r = M.tolkaAiSvar(svarTxt.value);
-      utkast = { k: r.kursfil, saknas: r.saknas };
+      utkast = { k: r.kursfil, saknas: r.saknas, deltagare: r.deltagare };
       utkastAndrat(true);
-      flash("Utkastet är inläst. Granska varje del nedan.");
+      flash(r.deltagare.length ? `Utkastet är inläst, med svar från ${r.deltagare.length} deltagare. Granska varje del nedan.` : "Utkastet är inläst. Granska varje del nedan.");
     } catch {
       flash("Svaret gick inte att läsa som JSON. Be AI svara med enbart JSON och försök igen.", true);
     }
@@ -1430,7 +1463,7 @@ function vKursfil() {
   const anvand = () => {
     try {
       const ny = M.lasKursfil(M.kursfilTillJson(k));
-      S = harArbete() && ny.organisation === K().organisation ? M.lasTillstand({ ...M.sparbart(S), kursfil: ny }) : M.nyttTillstand(ny);
+      S = harArbete() && ny.organisation === K().organisation ? M.lasTillstand({ ...M.sparbart(S), kursfil: ny }) : M.startspelbok(ny, utkast.deltagare);
       andrat(true);
       flash(`Kursen använder nu kursfilen för ${ny.organisation}.`);
       render.hoppa = true;
@@ -1465,6 +1498,14 @@ function vKursfil() {
             el.addEventListener("input", () => { k.caseforslag[i] = el.value; utkastAndrat(); });
             return el;
           }, 8)),
+        h("section", { class: "card" }, h("h3", { text: "Från deltagarna" }),
+          p("Svaren från förberedelsen. De hamnar i startspelboken: namnen som deltagare och uppgifterna i idéflödet, med namn. Frågorna och besluten finns i kursfilen som förslag på case och beslutskort. Bara namn sparas om personerna.", "hjalp small"),
+          kfLista("deltagare", utkast.deltagare, () => ({ namn: "", fraga: "", beslut: "", uppgift: "", titel: "" }), (x, i) => [
+            kfText("Namn", x, "namn", { max: 80, fokus: `kf-dl-n-${i}` }),
+            kfText("Fråga om AI", x, "fraga", { area: true, fokus: `kf-dl-f-${i}` }),
+            kfText("Beslut ni står inför", x, "beslut", { area: true, fokus: `kf-dl-b-${i}` }),
+            kfText("Uppgift som tar tid, återkommer eller irriterar", x, "uppgift", { area: true, fokus: `kf-dl-u-${i}` }),
+            kfText("Kort titel på uppgiften", x, "titel", { max: 160, fokus: `kf-dl-t-${i}` })], 20)),
         h("section", { class: "card" }, h("h3", { text: "Sammanhang" }), p("Strategi och årets fokus, två till fyra korta stycken.", "hjalp small"),
           kfLista("stycke", k.sammanhang, () => ({ rubrik: "", text: "" }), (x, i) => [kfText("Rubrik", x, "rubrik", { max: 160, fokus: `kf-sh-r-${i}` }), kfText("Text", x, "text", { area: true, max: 3000, fokus: `kf-sh-t-${i}` })], 6)),
         h("section", { class: "card" }, h("h3", { text: "Spelregler" }),
@@ -1508,7 +1549,16 @@ function vKursfil() {
         laddaNer(`Kursfil_${slug(k.organisation)}.json`, `${JSON.stringify(M.kursfilTillJson(k), null, 2)}\n`, "application/json");
         flash("Kursfilen är nedladdad. Lägg den aldrig i ett publikt repo.");
       }, "", { "data-fokus": "kf-ladda-ner" }),
+      knapp("Ladda ner startspelboken", async () => {
+        try {
+          const st = M.startspelbok(k, utkast.deltagare);
+          const origin = /^https?:/.test(location.protocol) ? location.origin : "";
+          laddaNer(`Startspelbok_${slug(k.organisation)}_${M.idag()}.html`, M.spelbokHtml(st, kurs, { origin, logga: await logga() }), "text/html");
+          flash("Startspelboken är nedladdad. Läs in den vid modul 1. Den är intern; lägg den aldrig i ett publikt repo.");
+        } catch { flash("Startspelboken gick inte att göra. Kontrollera kursfilen.", true); }
+      }, "", { "data-fokus": "kf-startspelbok" }),
       knapp("Pröva den i kursen nu", anvand, "ghost", { "data-fokus": "kf-anvand" })),
+    p("Startspelboken innehåller kursfilen, deltagarnas namn och deras uppgifter i idéflödet. Läs in den på datorn vid storskärmen när modul 1 börjar.", "hjalp small"),
     p("Pröva byter kursfil i den här fliken. Gäller den en annan organisation börjar kursen om från början, så att inget arbete blandas ihop. Spara spelboken först om ni vill behålla det ni gjort.", "hjalp small"),
   ];
 }

@@ -702,7 +702,33 @@ export function tolkaAiSvar(text) {
   if (!d || typeof d !== "object") throw new Error("json");
   d.format = FORMAT_KURSFIL;
   const saknas = arr(d._saknas, 30).map((x) => txt(x, MAX.mellan)).filter(Boolean);
-  return { kursfil: lasKursfil(medId(d)), saknas };
+  return { kursfil: lasKursfil(medId(d)), saknas, deltagare: lasDeltagare(d.fran_deltagarna) };
+}
+
+// Deltagarnas svar från förberedelsen. Bara namn och de tre svaren behålls.
+export function lasDeltagare(lista) {
+  return arr(lista, 20).map((x) => {
+    const o = obj(x);
+    return { namn: txt(o.namn, 80), fraga: txt(o.fraga, MAX.mellan), beslut: txt(o.beslut, MAX.mellan), uppgift: txt(o.uppgift, MAX.mellan), titel: txt(o.uppgift_titel ?? o.titel, MAX.kort) };
+  }).filter((d) => d.namn || d.fraga || d.beslut || d.uppgift);
+}
+
+function kortTitel(t) {
+  const forsta = String(t || "").split(/[.!?\n]/)[0].trim();
+  const ord = forsta.split(/\s+/).filter(Boolean);
+  return ord.length > 8 ? `${ord.slice(0, 8).join(" ")} ...` : forsta;
+}
+
+// Startspelboken: kursen från början, med deltagarna och deras uppgifter i idéflödet.
+export function startspelbok(kursfil, deltagare = []) {
+  const k = lasKursfil(kursfilTillJson(kursfil));
+  const S = nyttTillstand(k);
+  const d = lasDeltagare(deltagare);
+  S.meta.deltagare = [...new Set(d.map((x) => x.namn).filter(Boolean))].slice(0, 30);
+  S.svar.generera.ideer = d.filter((x) => x.uppgift).map((x) => ({
+    id: nyttId("ide"), titel: (x.titel || kortTitel(x.uppgift)).slice(0, MAX.kort), uppgift: x.uppgift, av: x.namn, ofta: "", samma: "", info: "",
+  })).slice(0, 80);
+  return S;
 }
 
 function allaTexter(v, ut = []) {
@@ -820,4 +846,14 @@ export function kortHtml(S, kurs, { logga = "" } = {}) {
 </body>
 </html>
 `;
+}
+
+// Utskicket före kursen: {id} ersätts med ifyllt värde, annars fältets exempel.
+export function utskickText(mall, falt, varden) {
+  let text = String(mall || "");
+  for (const f of falt || []) {
+    const v = String((varden || {})[f.id] || "").trim() || String(f.platshallare || "").replace(/^till exempel /, "");
+    text = text.replaceAll(`{${f.id}}`, v);
+  }
+  return text;
 }

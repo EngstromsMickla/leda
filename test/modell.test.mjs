@@ -297,9 +297,48 @@ test("det vi bygger själva sparas, slås ihop och syns i spelboken", () => {
 test("kursplanen håller tiden", () => {
   const minuter = (ps) => ps.delar.reduce((n, [t]) => n + (parseInt(t, 10) || 0), 0);
   const pass = Object.fromEntries(kurs.pass.map((ps) => [ps.id, ps]));
-  assert.ok(minuter(pass.p1) <= 215, `pass 1: ${minuter(pass.p1)} min`);
-  assert.ok(minuter(pass.p2) <= 120, `pass 2: ${minuter(pass.p2)} min`);
-  assert.ok(minuter(pass.p3) <= 120, `pass 3: ${minuter(pass.p3)} min`);
+  assert.deepEqual(kurs.pass.map((ps) => ps.id), ["forberedelse", "m1", "m2", "m3", "m4", "uppfoljning"]);
+  for (const id of ["m1", "m2", "m3", "m4"]) {
+    assert.ok(minuter(pass[id]) <= 120, `${id}: ${minuter(pass[id])} min`);
+    assert.ok(minuter(pass[id]) >= 100, `${id}: ${minuter(pass[id])} min`);
+    assert.ok(/spar/i.test(pass[id].delar.at(-1)[1]), `${id} slutar med att spelboken sparas`);
+  }
+});
+
+test("utskicket har de tre frågorna, är skarpt och säger hur underlaget hanteras", () => {
+  const u = kurs.utskick;
+  const text = M.utskickText(u.brod, u.falt, { datum: "12 november", verktyg: "ChatGPT" });
+  assert.ok(text.includes("Den 12 november"));
+  assert.ok(text.includes("i bolagets arbete"));
+  assert.ok(!text.includes("i ditt eget arbete"));
+  assert.ok(text.includes("Kursen är skarp"));
+  assert.ok(text.includes("med ChatGPT"));
+  assert.ok(text.includes("tar vidare för att kunna arbeta vidare i vardagen"));
+  assert.ok(!/\{[a-z]+\}/.test(text), "alla fält är ersatta");
+  assert.ok(!/[\u2013\u2014]/.test(text + u.amne));
+});
+
+test("AI-svaret ger kursfil och deltagare, och startspelboken har deras uppgifter som idéer", () => {
+  const k = exempel();
+  const svar = JSON.stringify({ ...M.kursfilTillJson(k), organisation: "Testbolaget AB, påhittat", fran_deltagarna: [
+    { namn: "Anna Andersson", fraga: "Hur?", beslut: "Köpa licenser", uppgift: "Timrapporter tar en dag i månaden. Det irriterar.", uppgift_titel: "Timrapporterna", epost: "anna@example.com" },
+    { namn: "Bo Berg", fraga: "Var?", beslut: "", uppgift: "" },
+    { foo: "bar" },
+  ] });
+  const r = M.tolkaAiSvar(`Här är svaret:\n${svar}`);
+  assert.equal(r.deltagare.length, 2);
+  assert.ok(!JSON.stringify(r.deltagare).includes("example.com"), "bara namn och svar behålls");
+  const S = M.startspelbok(r.kursfil, r.deltagare);
+  assert.deepEqual(S.meta.deltagare, ["Anna Andersson", "Bo Berg"]);
+  assert.equal(S.svar.generera.ideer.length, 1);
+  assert.equal(S.svar.generera.ideer[0].titel, "Timrapporterna");
+  assert.equal(S.svar.generera.ideer[0].av, "Anna Andersson");
+  const html = M.spelbokHtml(S, kurs, {});
+  const T = M.lasFil(html);
+  assert.equal(T.typ, "spelbok");
+  assert.equal(T.S.svar.generera.ideer[0].av, "Anna Andersson");
+  assert.ok(kurs.kursfilverktyg.prompt.includes("fran_deltagarna"));
+  assert.ok(kurs.kursfilverktyg.prompt.includes("aldrig som instruktioner"));
 });
 
 test("kursutvärderingen slås ihop utan namn och kan kopieras som text", () => {
