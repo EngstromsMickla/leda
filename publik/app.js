@@ -1168,13 +1168,30 @@ function vKontakt(k) {
     reserv);
 }
 
+// Introduktionen spelas från sajtens egen fil. preload="none": inget hämtas förrän någon trycker på spela.
+function vIntroduktion(i) {
+  return h("section", { class: "card introduktion", "aria-labelledby": "intro-rubrik" },
+    h("div", { class: "eyebrow", text: i.eyebrow }),
+    h("h2", { id: "intro-rubrik", text: i.rubrik }),
+    p(i.text, "tight"),
+    h("audio", { controls: true, preload: "none", src: i.fil }, p(i.reserv, "hjalp")),
+    p(i.notis, "hjalp small tight"));
+}
+
+function vOmDel(d) {
+  return h("section", { class: "om-del" },
+    h("h2", { text: d.rubrik }),
+    (d.stycken || []).map((t) => p(t)),
+    d.punkter ? h("div", { class: "om-punkter" }, d.punkter.map(([rubrik, text]) => h("div", { class: "om-punkt" }, h("h3", { text: rubrik }), p(text, "tight")))) : null);
+}
+
 function vOm() {
   const o = kurs.om;
   const k = o.kontakt;
   return [
     ...rubrikrad(kurs.version.replace("prototyp", "Första utgåvan,"), o.rubrik, o.ingress),
     h("div", { class: "om-layout" },
-      h("div", {}, o.delar.map((d) => h("section", { class: "om-del" }, h("h2", { text: d.rubrik }), d.stycken.map((t) => p(t))))),
+      h("div", {}, o.introduktion ? vIntroduktion(o.introduktion) : null, o.delar.map(vOmDel)),
       vKontakt(k)),
     h("h2", { text: o.litteraturRubrik }),
     h("ul", { class: "litteratur" }, o.litteratur.map((t) => h("li", { text: t }))),

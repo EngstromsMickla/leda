@@ -481,6 +481,12 @@ fieldset.plain { border: 0; padding: 0; margin: 10px 0 6px; min-width: 0; }
 /* Om kursen (v0.8) */
 .om-layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
 .om-del h2 { margin-top: 24px; }
+.introduktion { margin-top: 24px; border-top: 3px solid var(--strong); }
+.introduktion h2 { margin: 0 0 8px; }
+.introduktion audio { display: block; width: 100%; margin: 6px 0 12px; }
+.om-punkter { display: grid; gap: 14px; margin-top: 4px; }
+.om-punkt { border-left: 3px solid var(--accent-soft); padding-left: 14px; }
+.om-punkt h3 { font-size: 18px; margin: 0 0 4px; }
 .kontaktkort { margin-top: 24px; border-top: 3px solid var(--accent); scroll-margin-top: 110px; }
 .kontaktkort .btn { margin-top: 4px; }
 .kontakt-forklaring { margin-top: 10px; }

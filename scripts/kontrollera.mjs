@@ -50,6 +50,12 @@ if (!/Content-Security-Policy[^>]*default-src 'none'/.test(html)) fel.push("inde
 for (const f of ["img/mickla.png", "exempel/Exempel_kursfil.json", "CNAME", "innehall/kurs.js", "app.js", "modell.js", "style.css"]) {
   if (!fs.existsSync(path.join(rot, f))) fel.push(`saknas: publik/${f}`);
 }
+// Ljud: bara egna filer, under GitHubs gräns för uppladdning i webbgränssnittet.
+if (!/media-src 'self'/.test(html)) fel.push("index.html: CSP saknar media-src 'self' (ljudet spelas inte)");
+if (!fs.existsSync(path.join(rot, "ljud/introduktion.m4a"))) fel.push("saknas: publik/ljud/introduktion.m4a");
+if (fs.existsSync(path.join(rot, "ljud"))) for (const f of fs.readdirSync(path.join(rot, "ljud"))) {
+  if (fs.statSync(path.join(rot, "ljud", f)).size > 25 * 1024 * 1024) fel.push(`publik/ljud/${f}: större än 25 MB`);
+}
 for (const f of fs.readdirSync(path.join(rot, "exempel"))) if (!/^Exempel_/.test(f)) fel.push(`publik/exempel/${f}: bara påhittade exempelfiler får ligga i repot`);
 
 for (const f of ["CLAUDE.md", "README.md"]) {

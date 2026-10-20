@@ -35,6 +35,14 @@ export default {
   om: {
     rubrik: "Om kursen",
     ingress: "Leda i AI-takt är en kort kurs för ledningsgrupper och styrelser i kunskapsföretag. Det här är en första utgåva, som prövas och förbättras efter varje kurstillfälle.",
+    introduktion: {
+      eyebrow: "Lyssna",
+      rubrik: "AI-beslut är oftast hattar, inte tatueringar",
+      text: "Ett samtal på knappt sex minuter om vad kursen är och varför den ser ut som den gör.",
+      fil: "ljud/introduktion.m4a",
+      notis: "Samtalet är skapat med NotebookLM utifrån kursens underlag, och rösterna är AI-genererade. Vill du hellre läsa står upplägget och skälen bakom det nedan.",
+      reserv: "Din webbläsare kan inte spela upp ljudet här.",
+    },
     delar: [
       {
         rubrik: "Upplägg",
@@ -42,6 +50,17 @@ export default {
           "Kursen har fyra block: Förstå, Bedöma, Generera och Leda. Varje block följer samma varv: Lära, Pröva, Redovisa och Besluta. Lära börjar med fem minuters grunder och fortsätter med gissningar om vad det betyder för den egna organisationen. Allt som handlar om att pröva görs av deltagarna själva.",
           "Kursen är skarp. Före kursen skickar varje deltagare sina frågor, ett beslut ledningen står inför, en uppgift som skaver och bolagets egna dokument, och kursen förbereds utifrån det. Den ges som fyra moduler på två timmar med experiment i vardagen emellan, och en uppföljning efter cirka tre månader.",
           "Det deltagarna tar med sig är Ledningens spelbok: budskap, mandat, takt, experiment och beslut, samlade i en fil som ledningen återkommer till. Efter kursen används sidan Löpande arbete på ledningens vanliga möten, utan presentation och övningar.",
+        ],
+      },
+      {
+        rubrik: "Därför ser kursen ut så här",
+        punkter: [
+          ["Samma varv i varje modul", "Lära, Pröva, Redovisa och Besluta kommer tillbaka i varje modul, och det är meningen. Fail fast lärs inte genom att höra om det, utan genom att göra det så många gånger att det sitter i ryggmärgen. När varvet är bekant läggs kraften på innehållet."],
+          ["Ni prövar själva", "Någon i ledningen sitter vid tangentbordet, inte kursledaren. Den som har sett AI ge tre olika svar på samma fråga förstår variation på ett annat sätt än den som har hört om det."],
+          ["Skarpt material, men inte här", "Övningarna görs med bolagets riktiga frågor och dokument, i ett AI-verktyg som bolaget har godkänt, och bara med information som verktyget är godkänt för. Det som görs i kursen ska gå att använda dagen efter. Materialet går till bolagets egna verktyg, aldrig till den här sajten."],
+          ["Varje modul slutar med beslut", "Inte med en intressant diskussion, utan med beslut som skrivs in i spelboken. Besluten klassas efter hur lätta de är att ångra: en hatt tar man av, en frisyr växer ut, en tatuering sitter kvar. De flesta beslut om AI är hattar eller frisyrer, och då kan ledningen besluta snabbt och spara eftertanken till tatueringarna."],
+          ["Spelboken är bolagets", "Spelboken sparas efter varje modul och ägs av bolaget. Den är kursens resultat, inte ett kursmaterial att lägga i en pärm."],
+          ["Kursen slutar inte efter modul 4", "På ledningens vanliga möten används sidan Löpande arbete, och efter cirka tre månader prövar uppföljningen om besluten blev av. Att veta det från början gör att besluten tas på allvar."],
         ],
       },
       {
