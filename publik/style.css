@@ -379,7 +379,7 @@ body.stor .beslutskort, body.stor .mandatlista li { font-size: 18px; }
 }
 @media print {
   body { background: #fff; font-size: 12pt; }
-  .topbar, .status, .actions, .navrow, .footer, .toast, .pres, .kort-knappar, .loggform, .prompt-huvud button { display: none !important; }
+  .topbar, .status, .modulrad, .hopfalld, .actions, .navrow, .footer, .toast, .pres, .kort-knappar, .loggform, .prompt-huvud button { display: none !important; }
   .card { border-color: #ccc; break-inside: avoid; }
   main.wrap { padding-top: 0; }
 }
@@ -504,3 +504,48 @@ fieldset.plain { border: 0; padding: 0; margin: 10px 0 6px; min-width: 0; }
 .utskrift { margin-top: 32px; border-left: 4px solid var(--strong); }
 @media (max-width: 900px) { .arbete-karta { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 680px) { .arbete-karta { grid-template-columns: 1fr; } }
+
+/* Modulläget: raden under menyn, hopfällda delar och modulvalet på startsidan. */
+.modulrad { position: sticky; top: var(--topp, 57px); z-index: 4; background: var(--strong-soft); border-bottom: 1px solid #e3d5ab; }
+.modulrad-inre { padding-top: 8px; padding-bottom: 8px; }
+.modulrad-huvud { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.modulrad-var { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: #7a5a0c; font-weight: 600; }
+.modulrad-rubrik { font-family: var(--serif); font-size: 18px; }
+.modulrad-knappar { margin-left: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+.modulrad-nasta { max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
+.modulrad-text { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 4px; font-size: 15px; color: var(--ink); }
+.modulrad-text > span { max-width: 80ch; }
+body.i-modul [id] { scroll-margin-top: calc(var(--topp, 57px) + var(--modulh, 80px) + 12px); }
+.aktivt-steg { box-shadow: -6px 0 0 var(--strong); border-radius: 4px; }
+section.aktivt-steg, .card.aktivt-steg, .avslut.aktivt-steg { box-shadow: none; outline: 3px solid var(--strong); outline-offset: 10px; border-radius: 6px; }
+.hopfalld { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; padding: 10px 14px; margin: 0 0 12px; border: 1px dashed #c9c3b6; border-radius: 8px; color: var(--muted); font-size: 15px; }
+.hopfalld b { color: var(--ink); font-weight: 600; }
+.modulval { border-top: 3px solid var(--strong); }
+.modulknappar { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 6px 0 10px; }
+.modulknapp { display: flex; flex-direction: column; gap: 2px; }
+.modulsteg { margin: 6px 0 14px; padding-left: 22px; }
+.modulsteg li { margin: 2px 0; }
+.modulsteg li.klar button { color: var(--muted); }
+.modulsteg li.nu { font-weight: 600; }
+.modulsteg li.nu::marker { color: var(--strong); }
+@media (max-width: 680px) {
+  .modulrad { position: static; }
+  body.i-modul [id] { scroll-margin-top: calc(var(--topp, 57px) + 12px); }
+  .modulrad-knappar { margin-left: 0; width: 100%; }
+  .modulrad-nasta { max-width: 100%; flex: 1; }
+  .modulrad-rubrik { font-size: 17px; }
+}
+
+/* Förloppslisten i modulraden: segment efter planerad tid, och klockans markör. */
+.forlopp { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 8px 0 2px; }
+.forlopp-list { position: relative; display: flex; gap: 3px; flex: 1 1 420px; min-width: 0; height: 12px; }
+.forlopp-seg { flex-basis: 0; min-width: 6px; height: 12px; padding: 0; border: 0; border-radius: 3px; background: #e3d5ab; cursor: pointer; }
+.forlopp-seg.klar { background: var(--accent); }
+.forlopp-seg.nu { background: var(--strong); box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--strong); }
+.forlopp-seg.noll { flex-grow: 0; min-width: 8px; }
+.forlopp-seg:hover { filter: brightness(.92); }
+.forlopp-seg:focus-visible { outline: 3px solid #8fb9ad; outline-offset: 2px; }
+.forlopp-mark { position: absolute; top: -4px; width: 3px; height: 20px; margin-left: -1px; background: var(--ink); border-radius: 2px; pointer-events: none; }
+.klocka { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.klocka b { color: var(--ink); }
+.klocka.sen b, .klocka.sen { color: var(--weak); }

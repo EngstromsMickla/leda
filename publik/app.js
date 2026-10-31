@@ -255,6 +255,199 @@ function visaStatus() {
   );
 }
 
+// ---------- Modulläget ----------
+// Kursplanens steg för den modul som körs. Raden under menyn visar var ni är och tar er till nästa steg;
+// det på blocksidorna som modulen inte använder fälls ihop men går att visa.
+
+const oppnade = new Set(); // hopfällda delar som kursledaren har valt att visa ändå, "vy:del"
+const modulPass = (id) => kurs.pass.find((x) => x.id === id);
+const modulKortnamn = (id) => (modulPass(id)?.namn || "").split(":")[0];
+const aktivaSteg = () => (S && S.meta.modul ? M.modulSteg(kurs, S.meta.modul) : []);
+const stegHash = (st) => `#${st.vy}${st.till ? `/${st.till}` : ""}`;
+
+function gaTillSteg(i) {
+  const lista = aktivaSteg();
+  if (!lista.length) return;
+  // Klockan startar när ni går vidare från första steget, om den inte redan är startad,
+  // och räknar då med att stegen ni lämnar tog planerad tid.
+  if (!S.meta.startad && i > S.meta.steg) S.meta.startad = Date.now() - M.modulTid(lista, Math.min(i, lista.length - 1)).planStart * 60000;
+  S.meta.steg = Math.max(0, Math.min(lista.length - 1, i));
+  andrat(true);
+  const mal = stegHash(lista[S.meta.steg]);
+  render.hoppa = true;
+  if (location.hash === mal) render(); else location.hash = mal;
+}
+
+function startaModul(id) {
+  S.meta.modul = id;
+  S.meta.steg = 0;
+  S.meta.startad = 0;
+  oppnade.clear();
+  gaTillSteg(0);
+}
+
+function lamnaModul() {
+  S.meta.modul = "";
+  S.meta.steg = 0;
+  S.meta.startad = 0;
+  oppnade.clear();
+  andrat(true);
+  render();
+}
+
+async function avslutaModul() {
+  if (!lankKlar()) return;
+  const id = S.meta.modul;
+  const fore = { klara: S.meta.klara, modul: S.meta.modul, steg: S.meta.steg, startad: S.meta.startad };
+  S.meta.klara = [...S.meta.klara.filter((k) => k.id !== id), { id, datum: M.idag() }];
+  S.meta.modul = "";
+  S.meta.steg = 0;
+  S.meta.startad = 0;
+  try {
+    await sparaSpelbok();
+  } catch (err) {
+    Object.assign(S.meta, fore);
+    flash("Spelboken kunde inte sparas. Försök igen.", true);
+    console.error(err);
+    return;
+  }
+  oppnade.clear();
+  render();
+  flash(`${modulKortnamn(id)} är avslutad och spelboken är sparad. Läs in den nästa gång, så föreslås nästa modul.`);
+}
+
+// Visas en del av en blocksida i den modul som körs?
+function delVisas(vy, del) {
+  if (!S.meta.modul) return true;
+  return aktivaSteg().some((st) => st.vy === vy && st.delar.includes(del)) || oppnade.has(`${vy}:${del}`);
+}
+
+function hopfalld(vy, delar, rubrik) {
+  const t = kurs.modullage;
+  const ids = [...new Set(delar.flatMap((d) => M.modulerSomAnvander(kurs, vy, d)))];
+  // "modul 1 och 3", "modul 2, 3 och 4", "uppföljningen"
+  const nr = ids.filter((id) => /^m\d$/.test(id)).map((id) => id.slice(1));
+  const delar2 = [nr.length ? `modul ${nr.length > 1 ? `${nr.slice(0, -1).join(", ")} och ${nr[nr.length - 1]}` : nr[0]}` : "", ids.includes("uppfoljning") ? "uppföljningen" : ""].filter(Boolean);
+  const anv = delar2.length ? `${t.hopfalld} ${delar2.join(" och ")}` : t.hopfalldInte;
+  return h("div", { class: "hopfalld" },
+    h("span", {}, h("b", { text: rubrik }), ` · ${anv}`),
+    knapp(t.visa, () => { for (const d of delar) oppnade.add(`${vy}:${d}`); omrita(); }, "lank-knapp", { "data-fokus": `visa-${vy}-${delar[0]}` }));
+}
+
+// Förloppslisten: ett segment per steg, lika brett som stegets planerade minuter, och en markör för klockan.
+function forlopp(lista, i) {
+  const tid = M.modulTid(lista, i, S.meta.startad);
+  return h("div", { class: "forlopp" },
+    h("div", { class: "forlopp-list", role: "list", "aria-label": "Modulens steg" }, lista.map((st, j) => {
+      const seg = h("button", {
+        type: "button", role: "listitem", class: `forlopp-seg${j < i ? " klar" : j === i ? " nu" : ""}${st.min ? "" : " noll"}`,
+        title: `${j + 1}. ${st.rubrik}${st.min ? `, ${st.min} min` : ""}`, "aria-label": `Steg ${j + 1}: ${st.rubrik}`,
+        "aria-current": j === i ? "step" : null, onclick: () => gaTillSteg(j),
+      });
+      seg.style.flexGrow = String(Math.max(st.min, 1.5));
+      return seg;
+    }), h("div", { class: "forlopp-mark", "aria-hidden": "true", hidden: tid.gatt === null })),
+    h("div", { class: "klocka", "aria-live": "off" }));
+}
+
+function uppdateraKlocka() {
+  const rad = document.getElementById("modulrad");
+  const lista = aktivaSteg();
+  if (rad.hidden || !lista.length) return;
+  const t = kurs.modullage;
+  const i = Math.min(S.meta.steg, lista.length - 1);
+  const tid = M.modulTid(lista, i, S.meta.startad);
+  const klocka = rad.querySelector(".klocka");
+  const mark = rad.querySelector(".forlopp-mark");
+  if (!klocka) return;
+  if (tid.gatt === null) {
+    fyll(klocka, h("span", { text: `Plan ${tid.total} min`, title: t.klockanStart }),
+      knapp(t.startaKlockan, () => { S.meta.startad = Date.now(); andrat(true); visaModulrad(); }, "lank-knapp", { "data-fokus": "starta-klockan" }));
+    mark.hidden = true;
+    return;
+  }
+  const lage = tid.avvikelse > 0 ? `${tid.avvikelse} min ${t.efter}` : tid.avvikelse < 0 ? `${-tid.avvikelse} min ${t.fore}` : t.iFas;
+  const over = tid.gatt > tid.total;
+  klocka.className = `klocka${tid.avvikelse >= 5 ? " sen" : ""}`;
+  fyll(klocka, h("b", { text: `${tid.gatt} min av ${tid.total}` }), ` · ${over ? `${tid.gatt - tid.total} min ${t.overTid}` : lage}`);
+  mark.hidden = false;
+  mark.style.left = `${Math.min(100, (tid.gatt / Math.max(tid.total, 1)) * 100)}%`;
+}
+setInterval(uppdateraKlocka, 20000);
+
+function visaModulrad() {
+  const rad = document.getElementById("modulrad");
+  const lista = aktivaSteg();
+  if (!S || lasKod || !lista.length) { rad.hidden = true; document.body.classList.remove("i-modul"); return; }
+  const t = kurs.modullage;
+  const i = Math.min(S.meta.steg, lista.length - 1);
+  const st = lista[i];
+  const { vy } = rutt();
+  const harBorta = vy !== st.vy;
+  rad.hidden = false;
+  document.body.classList.add("i-modul");
+  fyll(rad, h("div", { class: "wrap modulrad-inre" },
+    h("div", { class: "modulrad-huvud" },
+      h("span", { class: "modulrad-var", text: `${modulKortnamn(S.meta.modul)} · steg ${i + 1} av ${lista.length}` }),
+      h("b", { class: "modulrad-rubrik", text: st.rubrik }),
+      st.tid ? h("span", { class: "etikett tid", text: st.tid }) : null,
+      h("span", { class: "modulrad-knappar" },
+        knapp("Föregående", () => gaTillSteg(i - 1), "ghost liten-knapp", { disabled: i === 0, "data-fokus": "steg-bak" }),
+        st.avslut
+          ? knapp("Avsluta och spara", avslutaModul, "liten-knapp", { "data-fokus": "steg-avsluta" })
+          : knapp(`Nästa: ${lista[i + 1].rubrik}`, () => gaTillSteg(i + 1), "liten-knapp modulrad-nasta", { "data-fokus": "steg-fram" }))),
+    forlopp(lista, i),
+    h("div", { class: "modulrad-text" },
+      h("span", { text: st.text }),
+      st.pres ? knapp("Presentera", () => {
+        if (vy !== st.vy) { render.hoppa = true; location.hash = stegHash(st); }
+        const b = blockAv(st.vy);
+        oppnaPres(st.vy, st.pres === "gissa" ? (b.grund || []).length : 0, st.pres);
+      }, "liten-knapp", { "data-fokus": "steg-pres" }) : null,
+      harBorta ? knapp(t.tillSteget, () => gaTillSteg(i), "lank-knapp") : null)));
+  document.documentElement.style.setProperty("--topp", `${document.querySelector(".topbar").offsetHeight}px`);
+  uppdateraKlocka();
+  document.documentElement.style.setProperty("--modulh", `${rad.offsetHeight}px`);
+}
+
+// Markera det avsnitt som steget gäller, så att det syns var på sidan ni ska vara.
+function markeraSteg() {
+  document.querySelectorAll(".aktivt-steg").forEach((el) => el.classList.remove("aktivt-steg"));
+  const lista = aktivaSteg();
+  if (!lista.length) return;
+  const st = lista[Math.min(S.meta.steg, lista.length - 1)];
+  if (st.vy !== rutt().vy || !st.till) return;
+  document.getElementById(st.till)?.classList.add("aktivt-steg");
+}
+
+function vModulval() {
+  const t = kurs.modullage;
+  const lista = aktivaSteg();
+  if (lista.length) {
+    const i = Math.min(S.meta.steg, lista.length - 1);
+    return h("section", { class: "card modulval", id: "modul" },
+      h("div", { class: "eyebrow", text: t.aktiv }),
+      h("h2", { class: "kortrubrik", text: modulPass(S.meta.modul).namn }),
+      h("ol", { class: "modulsteg" }, lista.map((st, j) => h("li", { class: j === i ? "nu" : j < i ? "klar" : "" },
+        h("button", { type: "button", class: "lank-knapp", onclick: () => gaTillSteg(j), "data-fokus": `modulsteg-${j}` }, st.rubrik),
+        st.tid ? h("span", { class: "hjalp small", text: ` ${st.tid}` }) : null))),
+      h("div", { class: "actions" },
+        knapp(`Fortsätt med steg ${i + 1}`, () => gaTillSteg(i), "", { "data-fokus": "modul-fortsatt" }),
+        knapp(t.avbryt, lamnaModul, "ghost", { "data-fokus": "modul-lamna" })));
+  }
+  const nasta = M.nastaModul(S);
+  return h("section", { class: "card modulval", id: "modul" },
+    h("h2", { class: "kortrubrik", text: t.rubrik }),
+    p(t.text, "hjalp"),
+    h("div", { class: "modulknappar" }, M.MODULER.map((id) => {
+      const klar = S.meta.klara.find((k) => k.id === id);
+      return h("div", { class: "modulknapp" },
+        knapp(id === nasta ? `${t.forslag}: ${modulPass(id).namn}` : modulPass(id).namn, () => startaModul(id), id === nasta ? "" : "ghost", { "data-fokus": `modul-${id}` }),
+        klar ? h("span", { class: "hjalp small", text: `${t.klara}${klar.datum ? ` ${klar.datum}` : ""}` }) : null);
+    })),
+    p("Läs in spelboken först, så föreslås rätt modul.", "hjalp small tight"));
+}
+
 let flashTimer = null;
 function flash(text, fel = false) {
   let t = document.getElementById("toast");
@@ -276,10 +469,12 @@ function render() {
   render.senast = vy;
   visaMeny();
   visaStatus();
+  visaModulrad();
   const mal = document.getElementById("vy");
   const vyer = { start: vStart, spelbok: vSpelbok, guide: vGuide, kursfil: vKursfil, om: vOm, arbete: vArbete };
   fyll(mal, lasKod ? vLas() : (vyer[vy] || (() => vBlock(blockAv(vy))))());
   if (vy === "kursfil") visaVarningar();
+  markeraSteg();
   document.title = vy === "start" ? kurs.namn : `${(MENY.find(([id]) => id === vy) || [0, kurs.kursfilverktyg.rubrik])[1]} · ${kurs.namn}`;
   if (fokus) {
     const el = mal.querySelector(`[data-fokus="${CSS.escape(fokus)}"]`);
@@ -293,6 +488,11 @@ function render() {
   render.hoppa = false;
 }
 const omrita = () => render();
+
+window.addEventListener("resize", () => {
+  const top = document.querySelector(".topbar");
+  if (top) document.documentElement.style.setProperty("--topp", `${top.offsetHeight}px`);
+});
 
 window.addEventListener("hashchange", () => {
   if (/^#(data|las)=/.test(location.hash)) { lasLank(); return; }
@@ -396,8 +596,9 @@ function vStart() {
         falt("Gruppens namn", S.meta.grupp, (v) => { S.meta.grupp = v.slice(0, 160); }, { typ: "text", max: 160, fokus: "grupp" }),
         h("label", { class: "falt-rad" }, h("span", { text: "Deltagare (valfritt)" }), delt),
         p("Namnen används bara för att fördela experiment och beslut, och följer bara med i er egen spelbok.", "hjalp small"))),
+    vModulval(),
     vFall(),
-    h("h2", { text: "Varje block är ett varv" }),
+    h("h2", { id: "varv", text: "Varje block är ett varv" }),
     varvkarta(""),
     h("h2", { text: "Fyra block" }),
     h("div", { class: "blockkarta" }, kurs.block.map((b) => h("a", { class: "blockruta", href: `#${b.id}` },
@@ -447,27 +648,40 @@ function vBlock(b) {
   const index = kurs.block.indexOf(b);
   const forra = kurs.block[index - 1];
   const nasta = kurs.block[index + 1];
+  const visas = (del) => delVisas(b.id, del);
+  const grundVisas = visas("grunderna");
+  const gissaVisas = visas("gissa");
+  const lst = aktivaSteg();
+  const sidanAnvands = !lst.length || lst.some((st) => st.vy === b.id);
+  // I modulläget presenteras bara det modulen använder: grunderna, gissningarna eller båda.
+  const presDel = S.meta.modul && grundVisas && !gissaVisas ? "grund" : S.meta.modul && gissaVisas && !grundVisas ? "gissa" : "alla";
+  const provaVisas = b.prova.filter((id) => visas(`ov-${id}`));
+  const redDel = b.redovisa.experiment ? "experimenten" : "redovisa";
   return [
     ...rubrikrad(`Block ${b.nr} av 4`, b.namn, b.fraga),
+    sidanAnvands ? null : h("p", { class: "note strong" }, `${kurs.modullage.sidanInte} ${modulKortnamn(S.meta.modul).toLowerCase()}. `,
+      knapp(kurs.modullage.tillSteget, () => gaTillSteg(S.meta.steg), "lank-knapp")),
     p(b.ingress),
     h("div", { class: "malruta" },
       h("div", {}, h("div", { class: "eyebrow", text: "Efter blocket kan ni" }), h("ul", {}, b.mal.map((m) => h("li", { text: m })))),
       S.svar.fall.fraga ? h("div", {}, h("div", { class: "eyebrow", text: "Ert case" }), h("p", { class: "fallcitat", text: S.svar.fall.fraga })) : h("div", {}, h("div", { class: "eyebrow", text: "Ert case" }), h("p", { class: "hjalp" }, "Inget case valt ännu. ", h("a", { href: "#start/fall" }, "Välj ett på startsidan.")))),
     varvkarta(b.id),
 
+    !grundVisas && !gissaVisas ? h("section", { class: "fas-sektion", id: "lara" }, h("h2", { text: "Lära" }), hopfalld(b.id, ["grunderna", "gissa"], "Grunderna och gissningarna")) :
     h("section", { class: "fas-sektion", id: "lara" },
       h("div", { class: "fas-huvud" }, h("h2", { text: "Lära" }),
-        knapp("Presentera på storskärm", () => oppnaPres(b.id, 0), "", { "data-fokus": "presentera" })),
+        knapp("Presentera på storskärm", () => oppnaPres(b.id, presDel === "gissa" ? (b.grund || []).length : 0, presDel), "", { "data-fokus": "presentera" })),
       p("Först grunderna, cirka fem minuter. Sedan gissningar om vad det betyder för er: läs frågan högt och låt alla gissa innan svaret visas.", "hjalp"),
+      b.grund?.length && !grundVisas ? hopfalld(b.id, ["grunderna"], "Grunderna") :
       b.grund?.length ? h("div", { class: "grunderna", id: "grunderna" },
-        h("div", { class: "grund-huvud" }, h("h3", { text: "Grunderna" }), knapp("Presentera grunderna", () => oppnaPres(b.id, 0), "ghost liten-knapp", { "data-fokus": "presentera-grund" })),
+        h("div", { class: "grund-huvud" }, h("h3", { text: "Grunderna" }), knapp("Presentera grunderna", () => oppnaPres(b.id, 0, presDel), "ghost liten-knapp", { "data-fokus": "presentera-grund" })),
         h("ol", { class: "grundlista" }, b.grund.map((g) => h("li", { class: "card tight grundkort" },
           h("h4", { text: g.rubrik }),
           h("ul", {}, g.punkter.map((t) => h("li", { text: t }))),
           g.kalla ? p(`Källa: ${g.kalla}`, "hjalp small tight") : null)))) : null,
-      h("div", { class: "grund-huvud" }, h("h3", { text: "Gissa och resonera" }),
-        knapp("Presentera gissningarna", () => oppnaPres(b.id, (b.grund || []).length), "ghost liten-knapp", { "data-fokus": "presentera-gissa" })),
-      h("div", { class: "kunskap" }, b.lara.map((kort, i) => {
+      !gissaVisas ? hopfalld(b.id, ["gissa"], "Gissa och resonera") : h("div", { class: "grund-huvud", id: "gissa" }, h("h3", { text: "Gissa och resonera" }),
+        knapp("Presentera gissningarna", () => oppnaPres(b.id, (b.grund || []).length, S.meta.modul ? "gissa" : "alla"), "ghost liten-knapp", { "data-fokus": "presentera-gissa" })),
+      !gissaVisas ? null : h("div", { class: "kunskap" }, b.lara.map((kort, i) => {
         const nyckel = `${b.id}-${kort.id}`;
         const visat = visade.has(nyckel);
         return h("article", { class: visat ? "card kunskapskort visat" : "card kunskapskort", id: `kort-${kort.id}` },
@@ -477,22 +691,25 @@ function vBlock(b) {
           visat ? kunskapskortInnehall(kort) : null,
           h("div", { class: "kort-knappar" },
             knapp(visat ? "Dölj svaret" : "Visa svaret", () => { visat ? visade.delete(nyckel) : visade.add(nyckel); omrita(); }, "ghost liten-knapp", { "data-fokus": `visa-${nyckel}` }),
-            knapp("Presentera härifrån", () => oppnaPres(b.id, (b.grund || []).length + i), "lank-knapp")));
+            knapp("Presentera härifrån", () => oppnaPres(b.id, (b.grund || []).length + i, presDel), "lank-knapp")));
       }))),
 
     h("section", { class: "fas-sektion", id: "prova" },
       h("h2", { text: "Pröva" }),
-      p("Övningarna görs av någon i ledningen, på storskärm eller på egen dator. Byt person mellan övningarna.", "hjalp"),
-      b.prova.map((id) => OVNINGAR[id]())),
+      !provaVisas.length ? hopfalld(b.id, b.prova.map((id) => `ov-${id}`), "Övningarna") : [
+        p("Övningarna görs av någon i ledningen, på storskärm eller på egen dator. Byt person mellan övningarna.", "hjalp"),
+        b.prova.map((id) => (visas(`ov-${id}`) ? OVNINGAR[id]() : hopfalld(b.id, [`ov-${id}`], kurs.ovningar[id].rubrik)))]),
 
     h("section", { class: "fas-sektion", id: "redovisa" },
-      h("h2", { text: "Redovisa" }), vRedovisa(b)),
+      h("h2", { text: "Redovisa" }),
+      !visas(redDel) && !visas("avslut") ? hopfalld(b.id, [redDel, "avslut"], b.redovisa.rubrik) : vRedovisa(b, visas(redDel), visas("avslut"))),
 
     h("section", { class: "fas-sektion", id: "besluta" },
-      h("h2", { text: "Besluta" }), p(b.besluta, "hjalp"),
-      b.id === "generera" && !S.beslut.some((x) => x.text.startsWith(kurs.startmandatInledning)) ? vStartmandat() : null,
-      beslutslogg(b.id)),
-    b.id === "leda" ? vUtvardering() : null,
+      h("h2", { text: "Besluta" }),
+      !visas("besluta") ? hopfalld(b.id, ["besluta"], "Beslut") : [p(b.besluta, "hjalp"),
+        b.id === "generera" && !S.beslut.some((x) => x.text.startsWith(kurs.startmandatInledning)) ? vStartmandat() : null,
+        beslutslogg(b.id)]),
+    b.id === "leda" ? (visas("utvardering") ? vUtvardering() : h("section", { class: "fas-sektion", id: "utvardering" }, h("h2", { text: kurs.utvardering.rubrik }), hopfalld(b.id, ["utvardering"], kurs.utvardering.rubrik))) : null,
 
     h("div", { class: "navrow" },
       forra ? h("a", { class: "btn ghost", href: `#${forra.id}` }, `Tillbaka till ${forra.namn}`) : h("a", { class: "btn ghost", href: "#start" }, "Till start"),
@@ -545,29 +762,32 @@ function vUtvardering() {
         p("Klistra in den i ett mejl till kursledaren, eller låt den ligga kvar i spelboken.", "hjalp small tight"))));
 }
 
-function vRedovisa(b) {
+function vRedovisa(b, egen = true, avslut = true) {
   const r = b.redovisa;
   const lager = S.svar[b.id].redovisa;
-  const ut = [h("h3", { class: "underrubrik", text: r.rubrik }), p(r.text, "hjalp"),
+  const redDel = r.experiment ? "experimenten" : "redovisa";
+  const ut = !egen ? [hopfalld(b.id, [redDel], r.rubrik)] : [h("h3", { class: "underrubrik", id: redDel === "experimenten" ? "experimenten" : null, text: r.rubrik }), p(r.text, "hjalp"),
     r.falt.map((f) => falt(f.namn, lager[f.id], (v) => { lager[f.id] = v; }, { rader: 3, fokus: `red-${b.id}-${f.id}` }))];
-  if (r.flyttade) {
+  if (r.flyttade && egen) {
     const fl = M.flyttade(S);
     ut.push(fl.length
       ? h("div", { class: "card tight" }, h("h4", { text: "Beslut som bytte klass när gränserna flyttades" }),
         h("ul", {}, fl.map((f) => h("li", {}, `${f.kort.text}: `, h("b", { text: `${klassNamn(f.fran)} blir ${klassNamn(f.till)}` }), ` ${lagesNamn(f.lage)}`))))
       : p("Inga beslut har bytt klass ännu. Gör övningen Sortera besluten i alla tre lägena.", "hjalp"));
   }
-  if (r.experiment) ut.push(experimentRedovisning());
+  if (r.experiment && egen) ut.push(experimentRedovisning());
   const bl = S.svar[b.id];
-  ut.push(h("div", { class: "card tillbaka", id: "fall-tillbaka" },
-    h("div", { class: "eyebrow", text: "Tillbaka till ert case" }),
-    S.svar.fall.fraga ? h("p", { class: "fallcitat", text: S.svar.fall.fraga }) : null,
-    falt(b.fallFraga, bl.fall, (v) => { bl.fall = v; }, { rader: 3, fokus: `fall-${b.id}` })));
-  ut.push(h("div", { class: "card tight sjalvskattning" },
-    h("h4", { text: "Kan ni det nu?" }),
-    p("Skatta er gemensamt mot blockets lärandemål. Svaret hamnar i spelboken.", "hjalp small"),
-    h("ul", { class: "mallista" }, b.mal.map((m, i) => h("li", {}, h("span", { text: m }),
-      valrad(`mal-${b.id}-${i}`, kurs.sjalvskattning, bl.mal[i], (v) => { bl.mal[i] = v; andrat(); omrita(); }, { aria: m }))))));
+  if (!avslut) { ut.push(hopfalld(b.id, ["avslut"], "Tillbaka till ert case och självskattning")); return ut; }
+  ut.push(h("div", { class: "avslut", id: "avslut" },
+    h("div", { class: "card tillbaka", id: "fall-tillbaka" },
+      h("div", { class: "eyebrow", text: "Tillbaka till ert case" }),
+      S.svar.fall.fraga ? h("p", { class: "fallcitat", text: S.svar.fall.fraga }) : null,
+      falt(b.fallFraga, bl.fall, (v) => { bl.fall = v; }, { rader: 3, fokus: `fall-${b.id}` })),
+    h("div", { class: "card tight sjalvskattning" },
+      h("h4", { text: "Kan ni det nu?" }),
+      p("Skatta er gemensamt mot blockets lärandemål. Svaret hamnar i spelboken.", "hjalp small"),
+      h("ul", { class: "mallista" }, b.mal.map((m, i) => h("li", {}, h("span", { text: m }),
+        valrad(`mal-${b.id}-${i}`, kurs.sjalvskattning, bl.mal[i], (v) => { bl.mal[i] = v; andrat(); omrita(); }, { aria: m })))))));
   return ut;
 }
 
@@ -1589,9 +1809,20 @@ document.body.append(presRuta);
 function presLista(b) {
   return [...(b.grund || []).map((g) => ({ typ: "grund", g })), ...b.lara.map((k) => ({ typ: "kort", k }))];
 }
-function oppnaPres(blockId, i) {
-  const lista = presLista(blockAv(blockId));
-  pres = { block: blockId, i, visat: lista[i]?.typ === "grund" };
+// del: "alla", "grund" (bara grunderna) eller "gissa" (bara gissningskorten). I modulläget visas bara det modulen använder.
+function presOmfang(b, del) {
+  const g = (b.grund || []).length;
+  const n = presLista(b).length;
+  if (del === "grund" && g) return [0, g - 1];
+  if (del === "gissa") return [g, n - 1];
+  return [0, n - 1];
+}
+function oppnaPres(blockId, i, del = "alla") {
+  const b = blockAv(blockId);
+  const lista = presLista(b);
+  const [fran, till] = presOmfang(b, del);
+  i = Math.max(fran, Math.min(till, i));
+  pres = { block: blockId, i, visat: lista[i]?.typ === "grund", fran, till };
   presRuta.hidden = false;
   document.body.classList.add("presenterar");
   ritaPres();
@@ -1612,21 +1843,21 @@ function presFram() {
   const lista = presLista(b);
   const post = lista[pres.i];
   if (!pres.visat) { pres.visat = true; visade.add(`${b.id}-${post.k.id}`); }
-  else if (pres.i < lista.length - 1) { pres.i += 1; pres.visat = lista[pres.i].typ === "grund"; }
+  else if (pres.i < pres.till) { pres.i += 1; pres.visat = lista[pres.i].typ === "grund"; }
   else { stangPres(); return; }
   ritaPres();
 }
 function presBak() {
   const lista = presLista(blockAv(pres.block));
   if (pres.visat && lista[pres.i].typ === "kort") pres.visat = false;
-  else if (pres.i > 0) { pres.i -= 1; pres.visat = true; }
+  else if (pres.i > pres.fran) { pres.i -= 1; pres.visat = true; }
   ritaPres();
 }
 function ritaPres() {
   const b = blockAv(pres.block);
   const lista = presLista(b);
   const post = lista[pres.i];
-  const sista = pres.i === lista.length - 1;
+  const sista = pres.i === pres.till;
   const antalGrund = (b.grund || []).length;
   const del = post.typ === "grund" ? `Grunderna ${pres.i + 1} av ${antalGrund}` : `Gissa och resonera ${pres.i - antalGrund + 1} av ${b.lara.length}`;
   const kropp = post.typ === "grund"
@@ -1647,8 +1878,8 @@ function ritaPres() {
         knapp("Stäng", stangPres, "pres-knapp", { "aria-label": "Stäng presentationen" }))),
     h("div", { class: "pres-kropp" }, kropp),
     h("div", { class: "pres-fot" },
-      knapp("Föregående", presBak, "pres-knapp", { disabled: pres.i === 0 && (post.typ === "grund" || !pres.visat) }),
-      h("div", { class: "pres-prickar" }, lista.map((x, j) => h("i", { class: [x.typ === "grund" ? "g" : "", j === pres.i ? "nu" : j < pres.i ? "klar" : ""].filter(Boolean).join(" ") }))),
+      knapp("Föregående", presBak, "pres-knapp", { disabled: pres.i === pres.fran && (post.typ === "grund" || !pres.visat) }),
+      h("div", { class: "pres-prickar" }, lista.slice(pres.fran, pres.till + 1).map((x, k) => [x, k + pres.fran]).map(([x, j]) => h("i", { class: [x.typ === "grund" ? "g" : "", j === pres.i ? "nu" : j < pres.i ? "klar" : ""].filter(Boolean).join(" ") }))),
       knapp(!pres.visat ? "Visa svaret" : sista ? "Avsluta" : post.typ === "grund" && lista[pres.i + 1]?.typ === "kort" ? "Till gissningarna" : "Nästa", presFram, "pres-knapp fram")));
   presRuta.querySelector(".fram")?.focus({ preventScroll: true });
   presRuta.scrollTop = 0;

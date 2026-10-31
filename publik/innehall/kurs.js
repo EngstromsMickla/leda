@@ -4,7 +4,7 @@
 
 export default {
   namn: "Leda i AI-takt",
-  version: "prototyp v1.1",
+  version: "prototyp v1.2",
   upphov: "© Engströms Mickla AB 2026",
 
   start: {
@@ -972,6 +972,19 @@ export default {
         ["5 min", "Tillbaka till ert case och spara spelboken"],
       ],
       slut: "Experimentkort och startmandat, att göra till modul 2",
+      steg: [
+        { vy: "start", till: "varv", rubrik: "Så går kursen till", tid: "5 min", text: "Visa varvet och de fyra blocken här på startsidan. Fyra moduler med två till fyra veckor emellan, samma varv i varje, och varje modul slutar med beslut." },
+        { vy: "start", till: "fall", rubrik: "Ledningens case", tid: "15 min", text: "Välj en fråga bland förslagen, som kommer från deltagarnas egna svar, eller skriv en egen. Fyll i varför den är viktig och vad ni vill kunna efter kursen." },
+        { vy: "forsta", till: "lara", delar: ["grunderna", "gissa"], rubrik: "Förstå: grunderna och gissningarna", tid: "35 min", pres: "alla", text: "Tryck Presentera. Först grunderna, sedan gissningskorten: läs frågan högt, låt alla gissa, visa svaret." },
+        { vy: "forsta", ov: "samma-fraga", min: 10, text: "Tre nya chattar i ert godkända AI-verktyg. De tre övningarna i Förstå delar på 30 minuter." },
+        { vy: "forsta", ov: "uppgifter", min: 10, text: "Sortera uppgifterna, de första är deltagarnas egna. Visa kursens förslag först när ni är klara." },
+        { vy: "forsta", ov: "kostnad", min: 10, text: "Siffrorna kommer från kursfilen. Ändra dem om ni vet bättre." },
+        { vy: "generera", till: "lara", delar: ["grunderna"], rubrik: "Generera: grunderna om experiment", tid: "5 min", pres: "grund", text: "Tryck Presentera. Bara grunderna nu; gissningarna kommer i modul 3." },
+        { vy: "generera", till: "ov-ideer", delar: ["ov-ideer", "ov-experiment"], rubrik: "De första experimentkorten", tid: "20 min", text: "I idéflödet ligger deltagarnas egna idéer. Tryck Gör experimentkort vid dem ni vill pröva. Den som ska göra testet fyller i kortet, med stoppdatum före modul 2." },
+        { vy: "generera", till: "besluta", delar: ["besluta"], rubrik: "Startmandatet", tid: "5 min", text: "Bestäm hur många timmar ett test får ta och för in startmandatet som beslut." },
+        { vy: "forsta", till: "redovisa", delar: ["redovisa", "avslut", "besluta"], rubrik: "Vad tar vi med oss?", tid: "5 min", text: "Det som överraskade, det ni behöver veta mer om, tillbaka till ert case och självskattningen. Vill ni redan nu besluta något, skriv det under Besluta längre ned." },
+        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras och tryck Avsluta och spara. Spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
+      ],
     },
     {
       id: "m2",
@@ -986,6 +999,15 @@ export default {
         ["10 min", "Var var vi oense, självskattning och spara spelboken"],
       ],
       slut: "Beslutsordningen prövad på era egna beslut",
+      steg: [
+        { vy: "generera", till: "redovisa", delar: ["experimenten"], rubrik: "Experimenten sedan sist", tid: "25 min", text: "Den som gjorde testet berättar vad som hände, även det som inte fungerade. Besluta för varje experiment: anta, justera eller stoppa." },
+        { vy: "bedoma", till: "lara", delar: ["grunderna", "gissa"], rubrik: "Bedöma: grunderna och gissningarna", tid: "25 min", pres: "alla", text: "Tryck Presentera. Först grunderna, sedan gissningskorten: läs frågan högt, låt alla gissa, visa svaret." },
+        { vy: "bedoma", ov: "guide", tid: "15 min", text: "Pröva guiden på ett verkligt beslut som ledningen står inför." },
+        { vy: "bedoma", ov: "sortera", tid: "35 min", text: "Sortera era beslut som det ser ut i dag. Byt sedan läge och se vilka beslut som byter klass." },
+        { vy: "bedoma", till: "redovisa", delar: ["redovisa", "avslut"], rubrik: "Var var vi oense?", tid: "10 min", text: "Beslut ni klassade olika, tillbaka till ert case och självskattningen." },
+        { vy: "bedoma", till: "besluta", delar: ["besluta"], rubrik: "Besluta", min: 5, text: "För in modulens beslut i loggen, klassade som hatt, frisyr eller tatuering." },
+        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras och tryck Avsluta och spara. Spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
+      ],
     },
     {
       id: "m3",
@@ -1001,6 +1023,16 @@ export default {
         ["10 min", "Beslut, tillbaka till ert case och spara spelboken"],
       ],
       slut: "Nya experiment, att göra till modul 4",
+      steg: [
+        { vy: "generera", till: "redovisa", delar: ["experimenten"], rubrik: "Experimenten sedan sist", tid: "10 min", text: "Den som gjorde testet berättar vad som hände, även det som inte fungerade. Besluta för varje experiment: anta, justera eller stoppa." },
+        { vy: "generera", till: "gissa", delar: ["gissa"], rubrik: "Generera: gissningarna", tid: "15 min", pres: "gissa", text: "Tryck Presentera. Grunderna visades i modul 1, så presentationen börjar med gissningskorten." },
+        { vy: "generera", ov: "prompter", tid: "35 min", text: "Med ert eget material, i ert godkända AI-verktyg. Turas om vid tangentbordet." },
+        { vy: "generera", ov: "ideer", tid: "15 min", text: "Nya idéer från var och en. Det är uppgiften som är idén, inte tekniken." },
+        { vy: "generera", ov: "experiment", tid: "20 min", rubrik: "Nya experimentkort", text: "Gör kort av de idéer ni vill pröva före modul 4." },
+        { vy: "generera", till: "besluta", delar: ["besluta"], rubrik: "Besluta", tid: "10 min", min: 5, text: "För in modulens beslut. Besluta och gå tillbaka till ert case delar på tio minuter." },
+        { vy: "generera", till: "avslut", delar: ["avslut"], rubrik: "Tillbaka till ert case", min: 5, text: "Ert case och självskattningen." },
+        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras och tryck Avsluta och spara. Spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
+      ],
     },
     {
       id: "m4",
@@ -1018,6 +1050,20 @@ export default {
         ["10 min", "Självskattning, utvärdering av kursen, spelboken fastställs och sparas"],
       ],
       slut: "Ledningens spelbok, fastställd",
+      steg: [
+        { vy: "generera", till: "redovisa", delar: ["experimenten"], rubrik: "Experimenten sedan sist", tid: "15 min", min: 8, text: "Redovisa och besluta: anta, justera eller stoppa. De här femton minuterna gäller även nästa steg." },
+        { vy: "leda", ov: "karta", min: 7, text: "Flytta det som har fungerat mot drift, och bestäm vad som stoppas." },
+        { vy: "leda", till: "lara", delar: ["grunderna", "gissa"], rubrik: "Leda: grunderna och gissningarna", tid: "20 min", pres: "alla", text: "Tryck Presentera. Fail fast, spårbundenhet och när alla kan bygga själva, sedan gissningskorten." },
+        { vy: "leda", ov: "spar", tid: "15 min", text: "Det som gjort er framgångsrika, och hur det kan hålla er kvar." },
+        { vy: "leda", ov: "bygga", tid: "15 min", text: "Bestäm det gemensamma först, sedan det som var och en får bygga fritt." },
+        { vy: "leda", ov: "budskap", tid: "15 min", text: "Vd eller ordförande skriver, ledningen skärper." },
+        { vy: "leda", ov: "mandat", tid: "15 min", text: "Det som får prövas utan att fråga, det som kräver en fråga först, och det ledningen beslutar." },
+        { vy: "leda", ov: "takt", tid: "10 min", text: "Bestäm takten och sätt datum för uppföljningen om cirka tre månader." },
+        { vy: "leda", till: "redovisa", delar: ["redovisa", "avslut"], rubrik: "Vad säger vi på måndag?", tid: "10 min", min: 4, text: "Det ni säger till organisationen, ert case och självskattningen. De sista tio minuterna gäller även de tre följande stegen." },
+        { vy: "leda", till: "besluta", delar: ["besluta"], rubrik: "Besluta", min: 3, text: "För in modulens beslut i loggen." },
+        { vy: "leda", till: "utvardering", delar: ["utvardering"], rubrik: "Utvärdera kursen", min: 3, text: "Svara ärligt. Det som inte fungerade är det mest användbara." },
+        { vy: "spelbok", till: "spara", rubrik: "Fastställ och spara spelboken", avslut: true, text: "Det här är ledningens fastställda spelbok. Välj länk med lösenfras och tryck Avsluta och spara." },
+      ],
     },
     {
       id: "uppfoljning",
@@ -1031,8 +1077,38 @@ export default {
         ["5 min", "Nästa varv och nästa uppföljning"],
       ],
       slut: "Nästa varv",
+      steg: [
+        { vy: "arbete", till: "steg-1", rubrik: "Läs in spelboken och öppna Löpande arbete", tid: "5 min", text: "Läs in den senast sparade spelboken." },
+        { vy: "arbete", till: "steg-3", rubrik: "Experimenten sedan sist", tid: "20 min", text: "Anta, justera eller stoppa." },
+        { vy: "arbete", till: "steg-5", rubrik: "Takten och måtten", tid: "15 min", text: "Hålls takten, och vad visar måtten?" },
+        { vy: "arbete", till: "steg-4", rubrik: "Mandatet och klassningen", tid: "15 min", text: "Har något beslut bytt klass sedan kursen?" },
+        { vy: "arbete", till: "steg-2", rubrik: "Nästa varv", tid: "5 min", text: "Nya idéer, och datum för nästa uppföljning." },
+        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras och tryck Avsluta och spara. Spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
+      ],
     },
   ],
+  // Modulläget: stegraden under menyn och valet på startsidan.
+  modullage: {
+    rubrik: "Vilken modul kör ni?",
+    text: "Välj modul, så visar raden under menyn stegen i rätt ordning, med en instruktion till kursledaren för varje steg. Det som inte ingår i modulen fälls ihop.",
+    forslag: "Nästa",
+    klara: "Avslutat",
+    fritt: "Bläddra fritt",
+    aktiv: "Ni kör",
+    avbryt: "Lämna modulläget",
+    hopfalld: "Används i",
+    hopfalldInte: "Används inte i någon modul",
+    visa: "Visa ändå",
+    sidanInte: "Den här sidan används inte i",
+    tillSteget: "Tillbaka till steget",
+    startaKlockan: "Starta klockan",
+    klockanStart: "Klockan startar när ni går vidare från första steget, eller när du trycker Starta klockan.",
+    iFas: "enligt plan",
+    efter: "efter plan",
+    fore: "före plan",
+    overTid: "över tiden",
+  },
+
   passKort: "Mellan modulerna går två till fyra veckor, så att experimenten hinner göras. Har ledningen en halv dag kan två moduler köras i rad; varje modul slutar ändå med beslut och sparad spelbok.",
 
   // Utskicket före kursen. Fälten fylls i under Så går det till; {..} ersätts.
@@ -1066,6 +1142,10 @@ export default {
       {
         rubrik: "Modul 1",
         text: "Läs in startspelboken på datorn vid storskärmen. Deltagarnas frågor finns som förslag på case och deras uppgifter i idéflödet, med namn. Deltagarna behöver tillgång till ett AI-verktyg som bolaget har godkänt för intern information.",
+      },
+      {
+        rubrik: "Modulläget",
+        text: "Läs in spelboken och välj modul på startsidan; nästa modul föreslås. Raden under menyn visar kursplanens steg i ordning, med en instruktion för varje steg, och Nästa tar er till rätt sida och avsnitt. Det som modulen inte använder är hopfällt men går att visa. Presentera visar bara det modulen använder. Sista steget sparar spelboken och markerar modulen som avslutad.",
       },
       {
         rubrik: "Under modulen",

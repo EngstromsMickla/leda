@@ -13,6 +13,8 @@ export const EXPBESLUT = ["", "anta", "justera", "stoppa"];
 export const KOSTNADSFALT = ["anvandare", "fragor", "perFraga", "dagar", "licens", "agentUppgifter", "agentSteg", "agentPerSteg"];
 export const SJALV = ["ja", "delvis", "nej"];
 export const NYTTA = ["mycket", "ganska", "lite", "inte"];
+export const MODULER = ["m1", "m2", "m3", "m4", "uppfoljning"];
+const DELAR_BLOCK = ["grunderna", "gissa", "redovisa", "experimenten", "avslut", "besluta", "utvardering"];
 
 const MAX = { kort: 160, mellan: 600, lang: 3000 };
 
@@ -104,7 +106,7 @@ export function nyttSvar() {
 
 export function nyttTillstand(kursfil) {
   return {
-    meta: { grupp: kursfil?.grupp || "", deltagare: [], skapad: idag() },
+    meta: { grupp: kursfil?.grupp || "", deltagare: [], skapad: idag(), modul: "", steg: 0, startad: 0, klara: [] },
     kursfil,
     svar: nyttSvar(),
     beslut: [],
@@ -126,7 +128,7 @@ export function lasTillstand(indata) {
   const kursfil = lasKursfil(d.kursfil);
   const S = nyttTillstand(kursfil);
   const m = obj(d.meta);
-  S.meta = { grupp: txt(m.grupp, MAX.kort), deltagare: arr(m.deltagare, 30).map((x) => txt(x, 80)).filter(Boolean), skapad: datum(m.skapad) || idag() };
+  S.meta = { grupp: txt(m.grupp, MAX.kort), deltagare: arr(m.deltagare, 30).map((x) => txt(x, 80)).filter(Boolean), skapad: datum(m.skapad) || idag(), ...lasModul(m) };
   if (txt(m.av, 80)) S.meta.av = txt(m.av, 80);
   const s = obj(d.svar);
   const fa = obj(s.fall);
@@ -205,6 +207,60 @@ export function lasTillstand(indata) {
   })).filter((x) => giltigtId(x.id) && x.text);
   return S;
 }
+
+// Modulläget: vilken modul som körs, vilket steg ni är på och vilka moduler som är avslutade.
+function lasModul(m) {
+  const klara = [];
+  for (const x of arr(m.klara, 10)) {
+    const id = ett(obj(x).id, MODULER);
+    if (id && !klara.some((k) => k.id === id)) klara.push({ id, datum: datum(obj(x).datum) });
+  }
+  return { modul: ett(m.modul, MODULER), steg: Math.round(tal(m.steg, 0, 40, 0)), startad: Math.round(tal(m.startad, 0, 1e13, 0)), klara };
+}
+
+// Nästa modul att köra: den första som inte är avslutad.
+export function nastaModul(S) {
+  return MODULER.find((id) => !S.meta.klara.some((k) => k.id === id)) || "";
+}
+
+// Stegen i en modul, med rubrik, ankare och vilka delar av en blocksida steget använder.
+export function modulSteg(kurs, modulId) {
+  const pass = kurs.pass.find((x) => x.id === modulId);
+  if (!pass || !pass.steg) return [];
+  return pass.steg.map((st) => {
+    const ov = st.ov ? kurs.ovningar[st.ov] : null;
+    return {
+      vy: st.vy,
+      till: st.till || (st.ov ? `ov-${st.ov}` : ""),
+      delar: st.delar || (st.ov ? [`ov-${st.ov}`] : []),
+      rubrik: st.rubrik || (ov ? ov.rubrik : ""),
+      tid: st.tid || "",
+      min: Number.isFinite(st.min) ? st.min : Number((st.tid || "").match(/\d+/)?.[0] || (ov ? ov.tid.match(/\d+/)?.[0] : 0) || 0),
+      text: st.text || "",
+      pres: st.pres || "",
+      avslut: st.avslut === true,
+    };
+  });
+}
+
+// Var ni är mot planen: planerade minuter före och efter steg i, och hur många minuter före eller efter plan ni ligger.
+// avvikelse > 0 betyder efter plan, < 0 före plan, 0 enligt plan. Utan startad klocka är gatt och avvikelse null.
+export function modulTid(steg, i, startad = 0, nu = Date.now()) {
+  const total = steg.reduce((s, x) => s + x.min, 0);
+  const planStart = steg.slice(0, i).reduce((s, x) => s + x.min, 0);
+  const planSlut = planStart + (steg[i]?.min || 0);
+  if (!startad) return { total, planStart, planSlut, gatt: null, avvikelse: null };
+  const gatt = Math.max(0, Math.floor((nu - startad) / 60000));
+  const avvikelse = gatt > planSlut ? gatt - planSlut : gatt < planStart ? gatt - planStart : 0;
+  return { total, planStart, planSlut, gatt, avvikelse };
+}
+
+// Vilka moduler som använder en del av en blocksida, till exempel "ov-prompter" eller "grunderna" på generera.
+export function modulerSomAnvander(kurs, vy, del) {
+  return MODULER.filter((id) => modulSteg(kurs, id).some((st) => st.vy === vy && st.delar.includes(del)));
+}
+
+export const giltigDel = (del) => DELAR_BLOCK.includes(del) || /^ov-[a-z-]+$/.test(del);
 
 export function sparbart(S) {
   return { format: FORMAT_SPELBOK, version: 1, sparad: idag(), meta: S.meta, kursfil: S.kursfil, svar: S.svar, beslut: S.beslut };
@@ -507,6 +563,8 @@ export function spelbokHtml(S, kurs, { origin = "", lank = "", lankTyp = "data",
     [["Det som fungerade bäst", uv.basta], ["Det vi skulle ändra eller ta bort", uv.andra], ["Det som saknades", uv.saknas]].filter(([, v]) => v).map(([k, v]) => `<h3>${esc(k)}</h3>${stycken(v)}`).join("")}`
     : tom("Kursen är inte utvärderad ännu.");
   const deltagare = S.meta.deltagare.length ? ` · ${esc(S.meta.deltagare.join(", "))}` : "";
+  const klara = S.meta.klara.length
+    ? `<p class="lead">Avslutat: ${esc(S.meta.klara.map((k) => `${(kurs.pass.find((x) => x.id === k.id)?.namn || k.id).split(":")[0]}${k.datum ? ` ${k.datum}` : ""}`).join(", "))}</p>` : "";
 
   return `<!doctype html>
 <html lang="sv">
@@ -522,7 +580,7 @@ export function spelbokHtml(S, kurs, { origin = "", lank = "", lankTyp = "data",
 <main>
 <div class="eyebrow">${esc(kurs.namn)}<span class="klass">Intern</span></div>
 <h1>Ledningens spelbok</h1>
-<p class="lead">${esc(K.organisation)} · ${esc(S.meta.grupp || K.grupp)}${deltagare} · sparad ${esc(idag())}</p>
+<p class="lead">${esc(K.organisation)} · ${esc(S.meta.grupp || K.grupp)}${deltagare} · sparad ${esc(idag())}</p>${klara}
 ${origin ? `<div class="fortsatt">${lank ? `<a href="${esc(`${origin}/#${typ}=${lank}&till=spelbok`)}">Öppna kursen med allt vi har gjort</a><br><span>${typ === "las"
     ? "Länken är låst med en lösenfras som inte finns i den här filen. Den skickas inte till någon server."
     : "Länken bär innehållet själv och skickas inte till någon server, men den som har länken kan läsa innehållet. Dela den bara med dem som får läsa spelboken."}</span>` : `Läs in den här filen på <a href="${esc(origin)}/">${esc(origin.replace(/^https?:\/\//, ""))}</a> för att arbeta vidare.`}</div>` : ""}
@@ -573,6 +631,7 @@ export function slaIhop(Sa, Sb, av = "") {
   const b = B.svar;
 
   A.meta.deltagare = [...new Set([...A.meta.deltagare, ...B.meta.deltagare, ...(av ? [av] : [])])].slice(0, 30);
+  for (const k of B.meta.klara || []) if (!A.meta.klara.some((x) => x.id === k.id)) A.meta.klara.push(k);
 
   for (const k of ["fraga", "varfor", "kunna"]) text(a.fall, k, b.fall[k]);
   for (const bl of BLOCK) {
