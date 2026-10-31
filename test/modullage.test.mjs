@@ -37,16 +37,23 @@ test("varje övning och varje del av blocksidorna används i någon modul", () =
   }
 });
 
-test("modul 1 följer kursplanen: Generera bara grunderna, inga gissningar, prompter eller redovisning", () => {
+test("varje modul är ett block: bara egen sida, utom testerna i modul 2 och experimenten i modul 4", () => {
+  const sidor = (id) => [...new Set(M.modulSteg(kurs, id).map((s) => s.vy).filter((v) => M.BLOCK.includes(v)))];
+  assert.deepEqual(sidor("m1"), ["forsta"]);
+  assert.deepEqual(sidor("m2"), ["forsta", "bedoma"]);
+  assert.deepEqual(sidor("m3"), ["generera"]);
+  assert.deepEqual(sidor("m4"), ["generera", "leda"]);
+  const m2 = M.modulSteg(kurs, "m2");
+  assert.deepEqual(m2[0].delar, ["besluta"], "modul 2 tittar bara på testerna under Förstå > Besluta");
+  const m4 = M.modulSteg(kurs, "m4");
+  assert.deepEqual(m4[0].delar, ["experimenten"], "modul 4 använder bara redovisningen av experimenten på Generera");
   const m1 = M.modulSteg(kurs, "m1");
-  const anv = (vy, d) => m1.some((s) => s.vy === vy && s.delar.includes(d));
-  assert.ok(anv("generera", "grunderna"));
-  assert.ok(!anv("generera", "gissa"));
-  assert.ok(!anv("generera", "ov-prompter"));
-  assert.ok(!anv("generera", "experimenten"));
-  assert.ok(anv("generera", "ov-experiment") && anv("generera", "besluta"));
-  assert.equal(m1.find((s) => s.vy === "generera" && s.pres).pres, "grund");
-  assert.equal(M.modulSteg(kurs, "m3").find((s) => s.vy === "generera" && s.pres).pres, "gissa");
+  assert.ok(m1.some((s) => s.vy === "forsta" && s.delar.includes("besluta")), "modul 1 slutar med beslut om de första testerna");
+  assert.ok(M.modulSteg(kurs, "m3").some((s) => s.vy === "generera" && s.delar.includes("besluta")), "startmandatet beslutas i modul 3");
+  for (const id of ["m1", "m2", "m3", "m4"]) {
+    const varv = M.modulSteg(kurs, id).filter((s) => s.vy !== "start" && s.vy !== "spelbok");
+    assert.ok(varv.some((s) => s.pres === "alla"), `${id} presenterar grunderna och gissningarna`);
+  }
 });
 
 test("modulläget sparas i spelboken och läses försiktigt", () => {
@@ -89,7 +96,7 @@ test("en ny startspelbok föreslår modul 1", () => {
 });
 
 test("förloppet räknar planerad tid och läget mot klockan", () => {
-  for (const [id, total] of [["m1", 120], ["m2", 115], ["m3", 105], ["m4", 115], ["uppfoljning", 60]]) {
+  for (const [id, total] of [["m1", 120], ["m2", 115], ["m3", 115], ["m4", 115], ["uppfoljning", 60]]) {
     const st = M.modulSteg(kurs, id);
     assert.equal(M.modulTid(st, 0).total, total, `${id} summerar inte till kursplanens tid`);
     assert.ok(st.every((x) => Number.isFinite(x.min) && x.min >= 0));
