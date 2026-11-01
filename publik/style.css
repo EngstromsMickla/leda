@@ -536,7 +536,7 @@ section.aktivt-steg, .card.aktivt-steg, .avslut.aktivt-steg { box-shadow: none; 
   .modulrad-rubrik { font-size: 17px; }
 }
 
-/* Förloppslisten i modulraden: segment efter planerad tid, och klockans markör. */
+/* Förloppslisten i modulraden: segment efter planerad tid. */
 .forlopp { position: relative; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; margin: 8px 0 2px; }
 .forlopp-list { position: relative; display: flex; gap: 3px; flex: 1 1 420px; min-width: 0; height: 12px; }
 .forlopp-seg { flex-basis: 0; min-width: 6px; height: 12px; padding: 0; border: 0; border-radius: 3px; background: #e3d5ab; cursor: pointer; }
@@ -545,7 +545,4 @@ section.aktivt-steg, .card.aktivt-steg, .avslut.aktivt-steg { box-shadow: none; 
 .forlopp-seg.noll { flex-grow: 0; min-width: 8px; }
 .forlopp-seg:hover { filter: brightness(.92); }
 .forlopp-seg:focus-visible { outline: 3px solid #8fb9ad; outline-offset: 2px; }
-.forlopp-mark { position: absolute; top: -4px; width: 3px; height: 20px; margin-left: -1px; background: var(--ink); border-radius: 2px; pointer-events: none; }
-.klocka { font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
-.klocka b { color: var(--ink); }
-.klocka.sen b, .klocka.sen { color: var(--weak); }
+.forlopp-plan { font-size: 14px; color: var(--muted); }

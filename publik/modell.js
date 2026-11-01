@@ -106,7 +106,7 @@ export function nyttSvar() {
 
 export function nyttTillstand(kursfil) {
   return {
-    meta: { grupp: kursfil?.grupp || "", deltagare: [], skapad: idag(), modul: "", steg: 0, startad: 0, klara: [] },
+    meta: { grupp: kursfil?.grupp || "", deltagare: [], skapad: idag(), modul: "", steg: 0, klara: [] },
     kursfil,
     svar: nyttSvar(),
     beslut: [],
@@ -215,7 +215,7 @@ function lasModul(m) {
     const id = ett(obj(x).id, MODULER);
     if (id && !klara.some((k) => k.id === id)) klara.push({ id, datum: datum(obj(x).datum) });
   }
-  return { modul: ett(m.modul, MODULER), steg: Math.round(tal(m.steg, 0, 40, 0)), startad: Math.round(tal(m.startad, 0, 1e13, 0)), klara };
+  return { modul: ett(m.modul, MODULER), steg: Math.round(tal(m.steg, 0, 40, 0)), klara };
 }
 
 // Nästa modul att köra: den första som inte är avslutad.
@@ -243,16 +243,11 @@ export function modulSteg(kurs, modulId) {
   });
 }
 
-// Var ni är mot planen: planerade minuter före och efter steg i, och hur många minuter före eller efter plan ni ligger.
-// avvikelse > 0 betyder efter plan, < 0 före plan, 0 enligt plan. Utan startad klocka är gatt och avvikelse null.
-export function modulTid(steg, i, startad = 0, nu = Date.now()) {
+// Planerade minuter: totalt, och före och efter steg i.
+export function modulTid(steg, i) {
   const total = steg.reduce((s, x) => s + x.min, 0);
   const planStart = steg.slice(0, i).reduce((s, x) => s + x.min, 0);
-  const planSlut = planStart + (steg[i]?.min || 0);
-  if (!startad) return { total, planStart, planSlut, gatt: null, avvikelse: null };
-  const gatt = Math.max(0, Math.floor((nu - startad) / 60000));
-  const avvikelse = gatt > planSlut ? gatt - planSlut : gatt < planStart ? gatt - planStart : 0;
-  return { total, planStart, planSlut, gatt, avvikelse };
+  return { total, planStart, planSlut: planStart + (steg[i]?.min || 0) };
 }
 
 // Vilka moduler som använder en del av en blocksida, till exempel "ov-prompter" eller "grunderna" på generera.

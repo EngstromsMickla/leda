@@ -95,22 +95,11 @@ test("en ny startspelbok föreslår modul 1", () => {
   assert.equal(M.nastaModul(S), "m1");
 });
 
-test("förloppet räknar planerad tid och läget mot klockan", () => {
+test("förloppet räknar planerad tid enligt kursplanen", () => {
   for (const [id, total] of [["m1", 120], ["m2", 115], ["m3", 115], ["m4", 115], ["uppfoljning", 60]]) {
     const st = M.modulSteg(kurs, id);
     assert.equal(M.modulTid(st, 0).total, total, `${id} summerar inte till kursplanens tid`);
     assert.ok(st.every((x) => Number.isFinite(x.min) && x.min >= 0));
   }
-  const m1 = M.modulSteg(kurs, "m1");
-  const start = Date.UTC(2026, 10, 6, 8, 0);
-  const vid = (min) => start + min * 60000;
-  assert.deepEqual(M.modulTid(m1, 2, 0), { total: 120, planStart: 20, planSlut: 55, gatt: null, avvikelse: null });
-  assert.equal(M.modulTid(m1, 2, start, vid(30)).avvikelse, 0);
-  assert.equal(M.modulTid(m1, 2, start, vid(62)).avvikelse, 7);
-  assert.equal(M.modulTid(m1, 2, start, vid(15)).avvikelse, -5);
-  assert.equal(M.modulTid(m1, 2, start, vid(15)).gatt, 15);
-  const S = M.nyttTillstand(M.lasKursfil({ format: M.FORMAT_KURSFIL, organisation: "Test AB (påhittat)" }));
-  S.meta.startad = start;
-  assert.equal(M.lasTillstand(M.sparbart(S)).meta.startad, start);
-  assert.equal(M.lasTillstand({ ...M.sparbart(S), meta: { startad: "igår" } }).meta.startad, 0);
+  assert.deepEqual(M.modulTid(M.modulSteg(kurs, "m1"), 2), { total: 120, planStart: 20, planSlut: 55 });
 });

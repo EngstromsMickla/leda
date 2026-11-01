@@ -4,7 +4,7 @@
 
 export default {
   namn: "Leda i AI-takt",
-  version: "prototyp v1.3",
+  version: "prototyp v1.4",
   upphov: "© Engströms Mickla AB 2026",
 
   start: {
@@ -1097,12 +1097,6 @@ export default {
     visa: "Visa ändå",
     sidanInte: "Den här sidan används inte i",
     tillSteget: "Tillbaka till steget",
-    startaKlockan: "Starta klockan",
-    klockanStart: "Klockan startar när ni går vidare från första steget, eller när du trycker Starta klockan.",
-    iFas: "enligt plan",
-    efter: "efter plan",
-    fore: "före plan",
-    overTid: "över tiden",
   },
 
   passKort: "Mellan modulerna går två till fyra veckor, så att experimenten hinner göras. Har ledningen en halv dag kan två moduler köras i rad; varje modul slutar ändå med beslut och sparad spelbok.",

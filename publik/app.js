@@ -268,9 +268,6 @@ const stegHash = (st) => `#${st.vy}${st.till ? `/${st.till}` : ""}`;
 function gaTillSteg(i) {
   const lista = aktivaSteg();
   if (!lista.length) return;
-  // Klockan startar när ni går vidare från första steget, om den inte redan är startad,
-  // och räknar då med att stegen ni lämnar tog planerad tid.
-  if (!S.meta.startad && i > S.meta.steg) S.meta.startad = Date.now() - M.modulTid(lista, Math.min(i, lista.length - 1)).planStart * 60000;
   S.meta.steg = Math.max(0, Math.min(lista.length - 1, i));
   andrat(true);
   const mal = stegHash(lista[S.meta.steg]);
@@ -281,7 +278,6 @@ function gaTillSteg(i) {
 function startaModul(id) {
   S.meta.modul = id;
   S.meta.steg = 0;
-  S.meta.startad = 0;
   oppnade.clear();
   gaTillSteg(0);
 }
@@ -289,7 +285,6 @@ function startaModul(id) {
 function lamnaModul() {
   S.meta.modul = "";
   S.meta.steg = 0;
-  S.meta.startad = 0;
   oppnade.clear();
   andrat(true);
   render();
@@ -298,11 +293,10 @@ function lamnaModul() {
 async function avslutaModul() {
   if (!lankKlar()) return;
   const id = S.meta.modul;
-  const fore = { klara: S.meta.klara, modul: S.meta.modul, steg: S.meta.steg, startad: S.meta.startad };
+  const fore = { klara: S.meta.klara, modul: S.meta.modul, steg: S.meta.steg };
   S.meta.klara = [...S.meta.klara.filter((k) => k.id !== id), { id, datum: M.idag() }];
   S.meta.modul = "";
   S.meta.steg = 0;
-  S.meta.startad = 0;
   try {
     await sparaSpelbok();
   } catch (err) {
@@ -334,9 +328,9 @@ function hopfalld(vy, delar, rubrik) {
     knapp(t.visa, () => { for (const d of delar) oppnade.add(`${vy}:${d}`); omrita(); }, "lank-knapp", { "data-fokus": `visa-${vy}-${delar[0]}` }));
 }
 
-// Förloppslisten: ett segment per steg, lika brett som stegets planerade minuter, och en markör för klockan.
+// Förloppslisten: ett segment per steg, lika brett som stegets planerade minuter.
 function forlopp(lista, i) {
-  const tid = M.modulTid(lista, i, S.meta.startad);
+  const total = M.modulTid(lista, i).total;
   return h("div", { class: "forlopp" },
     h("div", { class: "forlopp-list", role: "list", "aria-label": "Modulens steg" }, lista.map((st, j) => {
       const seg = h("button", {
@@ -346,34 +340,9 @@ function forlopp(lista, i) {
       });
       seg.style.flexGrow = String(Math.max(st.min, 1.5));
       return seg;
-    }), h("div", { class: "forlopp-mark", "aria-hidden": "true", hidden: tid.gatt === null })),
-    h("div", { class: "klocka", "aria-live": "off" }));
+    })),
+    h("span", { class: "forlopp-plan", text: `Plan ${total} min` }));
 }
-
-function uppdateraKlocka() {
-  const rad = document.getElementById("modulrad");
-  const lista = aktivaSteg();
-  if (rad.hidden || !lista.length) return;
-  const t = kurs.modullage;
-  const i = Math.min(S.meta.steg, lista.length - 1);
-  const tid = M.modulTid(lista, i, S.meta.startad);
-  const klocka = rad.querySelector(".klocka");
-  const mark = rad.querySelector(".forlopp-mark");
-  if (!klocka) return;
-  if (tid.gatt === null) {
-    fyll(klocka, h("span", { text: `Plan ${tid.total} min`, title: t.klockanStart }),
-      knapp(t.startaKlockan, () => { S.meta.startad = Date.now(); andrat(true); visaModulrad(); }, "lank-knapp", { "data-fokus": "starta-klockan" }));
-    mark.hidden = true;
-    return;
-  }
-  const lage = tid.avvikelse > 0 ? `${tid.avvikelse} min ${t.efter}` : tid.avvikelse < 0 ? `${-tid.avvikelse} min ${t.fore}` : t.iFas;
-  const over = tid.gatt > tid.total;
-  klocka.className = `klocka${tid.avvikelse >= 5 ? " sen" : ""}`;
-  fyll(klocka, h("b", { text: `${tid.gatt} min av ${tid.total}` }), ` · ${over ? `${tid.gatt - tid.total} min ${t.overTid}` : lage}`);
-  mark.hidden = false;
-  mark.style.left = `${Math.min(100, (tid.gatt / Math.max(tid.total, 1)) * 100)}%`;
-}
-setInterval(uppdateraKlocka, 20000);
 
 function visaModulrad() {
   const rad = document.getElementById("modulrad");
@@ -406,7 +375,6 @@ function visaModulrad() {
       }, "liten-knapp", { "data-fokus": "steg-pres" }) : null,
       harBorta ? knapp(t.tillSteget, () => gaTillSteg(i), "lank-knapp") : null)));
   document.documentElement.style.setProperty("--topp", `${document.querySelector(".topbar").offsetHeight}px`);
-  uppdateraKlocka();
   document.documentElement.style.setProperty("--modulh", `${rad.offsetHeight}px`);
 }
 
