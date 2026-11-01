@@ -515,6 +515,7 @@ fieldset.plain { border: 0; padding: 0; margin: 10px 0 6px; min-width: 0; }
 .modulrad-nasta { max-width: 340px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; }
 .modulrad-text { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin-top: 4px; font-size: 15px; color: var(--ink); }
 .modulrad-text > span { max-width: 80ch; }
+.modulrad-gor { color: #7a5a0c; font-weight: 600; }
 body.i-modul [id] { scroll-margin-top: calc(var(--topp, 57px) + var(--modulh, 80px) + 12px); }
 .aktivt-steg { box-shadow: -6px 0 0 var(--strong); border-radius: 4px; }
 section.aktivt-steg, .card.aktivt-steg, .avslut.aktivt-steg { box-shadow: none; outline: 3px solid var(--strong); outline-offset: 10px; border-radius: 6px; }

@@ -4,7 +4,7 @@
 
 export default {
   namn: "Leda i AI-takt",
-  version: "prototyp v1.4",
+  version: "prototyp v1.5",
   upphov: "© Engströms Mickla AB 2026",
 
   start: {
@@ -971,7 +971,7 @@ export default {
       ],
       slut: "Ett litet test per deltagare, att berätta om i början av modul 2",
       steg: [
-        { vy: "start", till: "varv", rubrik: "Så går kursen till", tid: "5 min", text: "Visa varvet och de fyra blocken här på startsidan. Fyra moduler, ett block i taget, samma varv i varje, och varje modul slutar med beslut." },
+        { vy: "start", till: "varv", rubrik: "Så går kursen till", tid: "5 min", text: "Gå igenom varvet. Modulen slutar med att var och en väljer ett litet test att göra före modul 2." },
         { vy: "start", till: "fall", rubrik: "Ledningens case", tid: "15 min", text: "Välj en fråga bland förslagen, som kommer från deltagarnas egna svar, eller skriv en egen. Fyll i varför den är viktig och vad ni vill kunna efter kursen." },
         { vy: "forsta", till: "lara", delar: ["grunderna", "gissa"], rubrik: "Lära: grunderna och gissningarna", tid: "35 min", pres: "alla", text: "Tryck Presentera. Först grunderna, sedan gissningskorten: läs frågan högt, låt alla gissa, visa svaret." },
         { vy: "forsta", ov: "samma-fraga", tid: "15 min", text: "Tre nya chattar i ert godkända AI-verktyg, och jämför svaren." },
@@ -1097,6 +1097,7 @@ export default {
     visa: "Visa ändå",
     sidanInte: "Den här sidan används inte i",
     tillSteget: "Tillbaka till steget",
+    gorSaHar: "Gör så här:",
   },
 
   passKort: "Mellan modulerna går två till fyra veckor, så att experimenten hinner göras. Har ledningen en halv dag kan två moduler köras i rad; varje modul slutar ändå med beslut och sparad spelbok.",

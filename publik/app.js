@@ -367,7 +367,7 @@ function visaModulrad() {
           : knapp(`Nästa: ${lista[i + 1].rubrik}`, () => gaTillSteg(i + 1), "liten-knapp modulrad-nasta", { "data-fokus": "steg-fram" }))),
     forlopp(lista, i),
     h("div", { class: "modulrad-text" },
-      h("span", { text: st.text }),
+      h("span", {}, h("b", { class: "modulrad-gor", text: t.gorSaHar }), " ", st.text),
       st.pres ? knapp("Presentera", () => {
         if (vy !== st.vy) { render.hoppa = true; location.hash = stegHash(st); }
         const b = blockAv(st.vy);
