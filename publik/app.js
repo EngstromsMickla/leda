@@ -18,6 +18,7 @@ let ui = { stor: false };
 let visaUppgiftsforslag = false;
 let lankVal = "las"; // "las" (lösenfras), "data" (utan lösenfras) eller "ingen"
 let lankFras = ""; // bara i minnet, aldrig i fliken eller filen
+let delaLank = { url: "", tid: "", typ: "" }; // den senast kopierade länken, bara i minnet
 let lasKod = null; // en låst länk som väntar på lösenfras
 let lasTill = "spelbok";
 let rensaKlar = 0;
@@ -128,6 +129,24 @@ function lankKlar() {
     return false;
   }
   return true;
+}
+
+// Skapar länken som öppnar kursen med allt ni har gjort, kopierar den och visar den på sidan.
+// Länken bär innehållet i #-delen, som aldrig skickas till servern.
+async function kopieraLank() {
+  if (!lankKlar()) return;
+  if (!/^https?:/.test(location.protocol)) { flash("Länken går bara att skapa när kursen är öppnad på leda.mickla.se. Spara spelboken och skicka filen i stället.", true); return; }
+  let kod = "";
+  try { kod = lankVal === "las" ? await M.packaLast(S, lankFras) : await M.packa(S); } catch { kod = ""; }
+  if (!kod) { flash("Spelboken är för stor för en länk. Spara spelboken och skicka filen i stället.", true); return; }
+  const typ = lankVal === "las" ? "las" : "data";
+  delaLank = { url: `${location.origin}/#${typ}=${kod}&till=spelbok`, tid: new Date().toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }), typ };
+  let kopierad = false;
+  try { await navigator.clipboard.writeText(delaLank.url); kopierad = true; } catch { kopierad = false; }
+  omrita();
+  const ruta = document.querySelector('[data-fokus="lankruta"]');
+  if (!kopierad && ruta) { ruta.focus(); ruta.select(); }
+  flash(kopierad ? "Länken är kopierad. Klistra in den i ett mejl eller i en annan webbläsare." : "Länken är markerad i rutan. Kopiera den med Ctrl+C eller Cmd+C.");
 }
 
 async function sparaSpelbok() {
@@ -1216,14 +1235,26 @@ function vSpara() {
     p("Spelboken är en fil som öppnas i vilken webbläsare som helst och går att skriva ut som PDF. Under varje del finns en länk till den övning där ni arbetar vidare. Filen innehåller ledningens interna arbete och är märkt Intern.", "hjalp"),
     h("fieldset", { class: "plain" }, h("legend", { class: "small-legend", text: "Länken som öppnar kursen igen" }),
       h("div", { class: "lankval" }, val.map(([id, namn, text]) => h("label", { class: lankVal === id ? "lankalt vald" : "lankalt" },
-        h("input", { type: "radio", name: "lankval", value: id, checked: lankVal === id, onchange: () => { lankVal = id; omrita(); }, "data-fokus": `lankval-${id}` }),
+        h("input", { type: "radio", name: "lankval", value: id, checked: lankVal === id, onchange: () => { lankVal = id; delaLank = { url: "", tid: "", typ: "" }; omrita(); }, "data-fokus": `lankval-${id}` }),
         h("span", {}, h("b", { text: namn }), h("span", { class: "hjalp small", text: text })))))),
     lankVal === "las" ? h("label", { class: "falt-rad frasfalt" }, h("span", { text: "Lösenfras" }), fras,
       h("span", { class: "hjalp small vikt", text: "Lösenfrasen sparas inte någonstans. Glöms den, läser ni in spelboksfilen i stället." })) : null,
+    lankVal === "ingen" ? null : vDelaLank(),
     h("div", { class: "actions" },
       knapp("Spara spelboken", sparaSpelbok, "", { "data-fokus": "spara-spelbok" }),
       knapp("Öppna spelboken i ny flik", oppnaSpelbok, "ghost"),
       knapp("Läs in spelbok", valjFil, "ghost")));
+}
+
+function vDelaLank() {
+  const ruta = h("textarea", { class: "lankruta", rows: 3, readonly: true, "aria-label": "Länken", "data-fokus": "lankruta", onfocus: (e) => e.target.select(), value: delaLank.url });
+  return h("div", { class: "delalank" },
+    h("div", { class: "delalank-huvud" },
+      knapp(delaLank.url ? "Kopiera en ny länk" : "Kopiera länken", kopieraLank, "", { "data-fokus": "kopiera-lank" }),
+      h("span", { class: "hjalp small", text: delaLank.url ? `Kopierad ${delaLank.tid}. Länken visar läget då; har ni arbetat vidare, kopiera en ny.` : "Länken öppnar kursen med allt ni har gjort, i vilken webbläsare som helst." })),
+    delaLank.url ? [ruta, p(delaLank.typ === "las"
+      ? "Länken är en vanlig webbadress till leda.mickla.se och fungerar bara med lösenfrasen. Dela lösenfrasen på annat sätt, till exempel muntligt."
+      : "Länken är en vanlig webbadress till leda.mickla.se. Den som har länken kan läsa allt i spelboken, så dela den bara med ledningsgruppen.", "hjalp small tight")] : null);
 }
 
 function vSpelbok() {

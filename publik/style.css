@@ -547,3 +547,8 @@ section.aktivt-steg, .card.aktivt-steg, .avslut.aktivt-steg { box-shadow: none; 
 .forlopp-seg:hover { filter: brightness(.92); }
 .forlopp-seg:focus-visible { outline: 3px solid #8fb9ad; outline-offset: 2px; }
 .forlopp-plan { font-size: 14px; color: var(--muted); }
+
+/* Dela länken: knapp och ruta med länken under Spara spelboken. */
+.delalank { border: 1px solid var(--accent); background: var(--accent-soft); border-radius: 8px; padding: 12px 14px; margin: 0 0 12px; display: grid; gap: 8px; }
+.delalank-huvud { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.lankruta { width: 100%; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; word-break: break-all; resize: vertical; background: #fff; }

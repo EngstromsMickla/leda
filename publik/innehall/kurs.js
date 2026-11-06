@@ -4,7 +4,7 @@
 
 export default {
   namn: "Leda i AI-takt",
-  version: "prototyp v1.5",
+  version: "prototyp v1.6",
   upphov: "© Engströms Mickla AB 2026",
 
   start: {
@@ -979,7 +979,7 @@ export default {
         { vy: "forsta", ov: "kostnad", tid: "10 min", text: "Siffrorna kommer från kursfilen. Ändra dem om ni vet bättre." },
         { vy: "forsta", till: "redovisa", delar: ["redovisa", "avslut"], rubrik: "Redovisa: vad tar vi med oss?", tid: "15 min", text: "Det som överraskade, det ni behöver veta mer om, tillbaka till ert case och självskattningen." },
         { vy: "forsta", till: "besluta", delar: ["besluta"], rubrik: "Besluta: era första tester", tid: "10 min", text: "Var och en väljer ett litet test att göra före modul 2: i ett verktyg som bolaget har godkänt, bara med information som verktyget är godkänt för, och högst några timmar. Skriv det som ett beslut med ansvarig och datum, klassat som hatt. Ni berättar hur det gick i början av modul 2." },
-        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras och tryck Avsluta och spara. Spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
+        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras. Vill ni dela länken, tryck Kopiera länken och klistra in den i ett mejl. Tryck sedan Avsluta och spara; spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
       ],
     },
     {
@@ -1003,7 +1003,7 @@ export default {
         { vy: "bedoma", ov: "sortera", tid: "35 min", text: "Sortera era beslut som det ser ut i dag. Byt sedan läge och se vilka beslut som byter klass." },
         { vy: "bedoma", till: "redovisa", delar: ["redovisa", "avslut"], rubrik: "Redovisa: var var vi oense?", tid: "15 min", text: "Beslut ni klassade olika, tillbaka till ert case och självskattningen." },
         { vy: "bedoma", till: "besluta", delar: ["besluta"], rubrik: "Besluta", tid: "10 min", text: "För in modulens beslut i loggen, klassade som hatt, frisyr eller tatuering. Behöver beslutsordningen ändras efter det ni såg?" },
-        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras och tryck Avsluta och spara. Spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
+        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras. Vill ni dela länken, tryck Kopiera länken och klistra in den i ett mejl. Tryck sedan Avsluta och spara; spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
       ],
     },
     {
@@ -1027,7 +1027,7 @@ export default {
         { vy: "generera", ov: "experiment", tid: "20 min", text: "Tryck Gör experimentkort vid de idéer ni vill pröva. Den som ska göra testet fyller i kortet, med stoppdatum före modul 4." },
         { vy: "generera", till: "besluta", delar: ["besluta"], rubrik: "Besluta: startmandatet", tid: "10 min", text: "Bestäm hur många timmar ett test får ta och för in startmandatet som beslut." },
         { vy: "generera", till: "avslut", delar: ["avslut"], rubrik: "Tillbaka till ert case", tid: "10 min", text: "Ert case och självskattningen. Experimenten redovisas i början av modul 4." },
-        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras och tryck Avsluta och spara. Spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
+        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras. Vill ni dela länken, tryck Kopiera länken och klistra in den i ett mejl. Tryck sedan Avsluta och spara; spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
       ],
     },
     {
@@ -1079,7 +1079,7 @@ export default {
         { vy: "arbete", till: "steg-5", rubrik: "Takten och måtten", tid: "15 min", text: "Hålls takten, och vad visar måtten?" },
         { vy: "arbete", till: "steg-4", rubrik: "Mandatet och klassningen", tid: "15 min", text: "Har något beslut bytt klass sedan kursen?" },
         { vy: "arbete", till: "steg-2", rubrik: "Nästa varv", tid: "5 min", text: "Nya idéer, och datum för nästa uppföljning." },
-        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras och tryck Avsluta och spara. Spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
+        { vy: "spelbok", till: "spara", rubrik: "Avsluta modulen och spara spelboken", avslut: true, text: "Välj länk med lösenfras. Vill ni dela länken, tryck Kopiera länken och klistra in den i ett mejl. Tryck sedan Avsluta och spara; spelboken minns att modulen är klar och föreslår nästa modul när den läses in igen." },
       ],
     },
   ],

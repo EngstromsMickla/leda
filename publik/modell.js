@@ -576,7 +576,7 @@ export function spelbokHtml(S, kurs, { origin = "", lank = "", lankTyp = "data",
 <div class="eyebrow">${esc(kurs.namn)}<span class="klass">Intern</span></div>
 <h1>Ledningens spelbok</h1>
 <p class="lead">${esc(K.organisation)} · ${esc(S.meta.grupp || K.grupp)}${deltagare} · sparad ${esc(idag())}</p>${klara}
-${origin ? `<div class="fortsatt">${lank ? `<a href="${esc(`${origin}/#${typ}=${lank}&till=spelbok`)}">Öppna kursen med allt vi har gjort</a><br><span>${typ === "las"
+${origin ? `<div class="fortsatt">${lank ? `<a href="${esc(`${origin}/#${typ}=${lank}&till=spelbok`)}">Öppna kursen med allt vi har gjort</a><br><span>Dela länken: högerklicka på den och välj Kopiera länkadress. Adressen till den här fliken går inte att dela. ${typ === "las"
     ? "Länken är låst med en lösenfras som inte finns i den här filen. Den skickas inte till någon server."
     : "Länken bär innehållet själv och skickas inte till någon server, men den som har länken kan läsa innehållet. Dela den bara med dem som får läsa spelboken."}</span>` : `Läs in den här filen på <a href="${esc(origin)}/">${esc(origin.replace(/^https?:\/\//, ""))}</a> för att arbeta vidare.`}</div>` : ""}
 <nav class="inneh" aria-label="Innehåll"><a href="#fall">Vårt case</a><a href="#spar">Spår</a><a href="#bygga">Bygga själva</a><a href="#budskap">Budskap</a><a href="#mandat">Mandat</a><a href="#takt">Takt</a><a href="#experiment">Experiment</a><a href="#beslut">Beslut</a><a href="#klassning">Klassning</a><a href="#karta">Försök och drift</a><a href="#ideer">Idéer</a><a href="#forsta">Det vi lärde oss</a><a href="#spelregler">Spelregler</a><a href="#utvardering">Utvärdering</a></nav>
